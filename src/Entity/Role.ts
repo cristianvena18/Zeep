@@ -1,14 +1,18 @@
-import { PrimaryGeneratedColumn, Column, Entity, BaseEntity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 
 @Entity()
-export class Role extends BaseEntity {
+class Role extends BaseEntity{
 
     @PrimaryGeneratedColumn()
-    public readonly id: number;
+    public Id!: number;
 
-    private _name: string;
+    @Column()
+    public Name: string;
 
-    @Column({unique: true})
-    public set name(value: string) { this._name = value; }
-    public get name(): string { return this._name; }
+    public constructor(name: string){
+        super();
+        this.Name = name;
+    }
 }
+
+export default Role;

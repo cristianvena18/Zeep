@@ -1,45 +1,45 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable} from "typeorm";
-import { Role } from "./Role";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany} from "typeorm";
+import Role from './Role';
 
 @Entity()
 class User extends BaseEntity{
-
+    
     @PrimaryGeneratedColumn()
-    public readonly id;
+    public Id!: number;
 
-    private _username: string;
-    private _password: string;
-    private _isBlocked: boolean;
-    private _roles: Role[];
+    @Column()
+    public Name: string;
+
+    @Column()
+    public Nickname: string;
+
+    @Column()
+    public Password: string;
+
+    @Column()
+    public IsBlocked: boolean;
+
+    @ManyToMany(type => Role, Role => User)
+    public Role: Role[];
+
+    public constructor(name: string, nickname: string, password: string, role: Role[]){
+        super();
+        this.Name = name;
+        this.Nickname = nickname;
+        this.Password = password;
+        this.IsBlocked = false;
+        this.Role = role
+    }
 
     public hasRole(role: Role){
-      const result = this.roles.find(element => element.name === role.name);
-
-      return !!result;
-    }
-
-    public addRole(role: Role){
-      this.roles.push(role);
-    }
-
-    // Setters and Getters
-    @Column()
-    public set username(value: string) { this._username = value; }
-    public get username(): string { return this._username; }
-
-    @Column()
-    public set password(value: string) { this._password = value; }
-    public get password(): string { return this._password; }
-
-    @Column()
-    public set isBlocked(value: boolean) { this._isBlocked = value; }
-    public get isBlocked(): boolean { return this._isBlocked; }
-
-    // Relationships
-    @ManyToMany(type => Role)
-    @JoinTable()
-    public set roles(value: Role[]) { this._roles = value; }
-    public get roles(): Role[] { return this._roles; }
+        const result = this.Role.find(element => element.Name === role.Name);
+  
+        return !!result;
+      }
+  
+      public addRole(role: Role){
+        this.Role.push(role);
+      }
 }
 
 export default User;

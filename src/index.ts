@@ -1,33 +1,32 @@
 import express, {Express} from 'express';
-import Router from './Router/Router'
-import "reflect-metadata";
-import {createConnectionDB} from './DataBase/Configuration'
+import Router from './Infraestructure/Routs';
+import 'reflect-metadata';
 import * as dotenv from 'dotenv';
+import { createConnectionDB } from './DataBase/Configs';
 
-class App {
+class app{
 
-    private express :Express;
+    private express: Express;
     private router: Router;
 
-    constructor(){
+    public constructor(){
         dotenv.config();
         this.express = express();
-        createConnectionDB()
+        createConnectionDB();
         this.router = new Router(this.express);
     }
 
     public run(){
         this.upServer();
-        this.router.up();
+        this.router.Up();
     }
 
     private upServer(){
         this.express.listen(3000, function(){
-            console.log('Server is run in port 3000');
+            console.log('Example app listening on port 3000!');
         });
     }
-
 }
 
-const app = new App()
-app.run()
+const router = new app();
+router.run();
