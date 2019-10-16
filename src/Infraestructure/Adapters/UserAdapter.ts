@@ -1,5 +1,5 @@
 import {Request} from 'express';
-import CreateUserCommand from './Commands/CreateUserCommands';
+import CreateUserCommand from '../Commands/CreateUserCommands';
 import schema from './Schemas/UserSchemas';
 import HashService from '../Services/HashService';
 

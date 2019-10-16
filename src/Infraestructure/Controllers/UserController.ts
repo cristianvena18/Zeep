@@ -2,17 +2,18 @@ import {Request, Response} from 'express';
 import User from '../../Domain/Entity/User';
 import Role from '../../Domain/Entity/Role';
 import UserAdapter from '../Adapters/UserAdapter';
+import UserStoreUseCase from '../../Domain/UsesCases/UserStoreUseCase';
 
 class UserController{
 
     public static async Store(req: Request, res: Response){
         const userAdapter = new UserAdapter();
+
         const command = userAdapter.adapt(req);
 
-        const user = new User(command);
-
+        const useCase = new UserStoreUseCase(command);
         try {
-            await user.save();
+            await useCase.execute();
 
             res.status(201).json({message: "The user has been successfully created"});
         } catch (error) {
