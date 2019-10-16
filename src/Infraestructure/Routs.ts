@@ -29,12 +29,12 @@ class Routs{
         this.express.post('/user', UserController.Store);
         this.express.get('/user/:id', UserController.Show);
         this.express.post('/user/:id/block', UserController.BlockUser);
+        this.express.post('/user/:id', UserController.Update);
         this.express.get('/post', PostController.Show);
         this.express.get('/post/:id', PostController.ShowId);
-        this.express.post('/user/:id', UserController.Update);
         this.express.post('/post', PostController.Store);
-        this.express.post('/logout', LoginController.LogOut);
 
+        this.express.post('/logout', LoginController.LogOut);
         this.express.post('/login', LoginController.LogIn);
     }
 }

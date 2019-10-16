@@ -1,9 +1,9 @@
 import {createConnection} from 'typeorm';
-import User from '../Entity/User';
-import Role from '../Entity/Role';
-import Post from '../Entity/Post';
-import Comments from '../Entity/Comments';
-import Sessions from '../Entity/Sessions';
+import User from '../../Domain/Entity/User';
+import Role from '../../Domain/Entity/Role';
+import Post from '../../Domain/Entity/Post';
+import Comments from '../../Domain/Entity/Comments';
+import Sessions from '../../Domain/Entity/Sessions';
 
 export async function createConnectionDB(){
     await createConnection({

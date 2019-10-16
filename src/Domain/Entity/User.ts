@@ -20,15 +20,14 @@ class User extends BaseEntity{
     public IsBlocked: boolean;
 
     @ManyToMany(type => Role, Role => User)
-    public Role: Role[];
+    public Role?: Role[];
 
-    public constructor(name: string, nickname: string, password: string, role: Role[]){
+    public constructor(command: ICreateUserCommand){
         super();
         this.Name = name;
-        this.Nickname = nickname;
-        this.Password = password;
+        this.Nickname = command.GetUserName();
+        this.Password = command.GetPassword();
         this.IsBlocked = false;
-        this.Role = role
     }
 
     public hasRole(role: Role){

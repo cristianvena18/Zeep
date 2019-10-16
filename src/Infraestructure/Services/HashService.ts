@@ -2,7 +2,7 @@ import { TokenGenerator, TokenBase } from 'ts-token-generator';
 import * as crypto from 'crypto';
 import {Hash} from 'crypto';
 
-class HashController{
+class HashService implements IHashService{
     public GeneratedToken(){
         const tokgen2 = new TokenGenerator({ bitSize: 512, baseEncoding: TokenBase.BASE62 });
 
@@ -24,4 +24,4 @@ class HashController{
     }
 }
 
-export default HashController;
+export default HashService;

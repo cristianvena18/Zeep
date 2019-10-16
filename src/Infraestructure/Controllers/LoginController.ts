@@ -1,7 +1,7 @@
-import HashController from '../HashController';
-import User from '../../Entity/User';
+import HashController from './HashController';
+import User from '../../Domain/Entity/User';
 import {Request, Response} from 'express';
-import Session from '../../Entity/Sessions';
+import Session from '../../Domain/Entity/Sessions';
 
 
 class LoginController{

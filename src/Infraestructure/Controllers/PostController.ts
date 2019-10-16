@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import User from '../../Entity/User';
+import User from '../../Domain/Entity/User';
 
 class PostController{
     public static async Show(req: Request, res: Response){

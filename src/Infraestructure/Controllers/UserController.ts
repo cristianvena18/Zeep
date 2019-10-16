@@ -1,22 +1,15 @@
 import {Request, Response} from 'express';
-import User from '../../Entity/User';
-import Role from '../../Entity/Role';
-import HashController from '../HashController';
+import User from '../../Domain/Entity/User';
+import Role from '../../Domain/Entity/Role';
+import UserAdapter from '../Adapters/UserAdapter';
 
 class UserController{
 
     public static async Store(req: Request, res: Response){
+        const userAdapter = new UserAdapter();
+        const command = userAdapter.adapt(req);
 
-        const {name, nickname, password}: any = req.body;
-
-        if(!name || !nickname || !password){
-            res.status(400).json({message: "Not all values found!"});
-        }
-
-        const hasher = new HashController();
-        const hashPassword = hasher.Encrypt(password);
-
-        const user = new User(name, nickname, hashPassword, [new Role("user", "sample")]);
+        const user = new User(command);
 
         try {
             await user.save();
@@ -35,9 +28,10 @@ class UserController{
             const user: User | undefined = await User.findOne(id);
 
             if(user){
-                if (user.Role[0].Access === "admin") {
-                    res.status(200).json({message: 'Ok', user});
-                }
+                //no funciona
+                // if (user.hasRole(new Role("admin"))) {
+                //     res.status(200).json({message: 'Ok', user});
+                // }
 
                 if(user.IsBlocked){
                     res.status(410).json({message: "this user is blocked, you are not authorized to see it"});

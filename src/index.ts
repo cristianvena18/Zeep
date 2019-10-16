@@ -2,7 +2,7 @@ import express, {Express} from 'express';
 import Router from './Infraestructure/Routs';
 import 'reflect-metadata';
 import * as dotenv from 'dotenv';
-import { createConnectionDB } from './DataBase/Configs';
+import { createConnectionDB } from './Infraestructure/DataBase/Configs';
 
 class app{
 
