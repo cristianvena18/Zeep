@@ -1,0 +1,3 @@
+interface IShowUserCommand{
+    GetPropiety(): any;
+}

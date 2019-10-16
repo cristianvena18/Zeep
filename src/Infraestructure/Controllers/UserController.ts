@@ -1,52 +1,33 @@
 import {Request, Response} from 'express';
 import User from '../../Domain/Entity/User';
 import Role from '../../Domain/Entity/Role';
-import UserAdapter from '../Adapters/UserAdapter';
+import UserStoreAdapter from '../Adapters/UserStoreAdapter';
 import UserStoreUseCase from '../../Domain/UsesCases/UserStoreUseCase';
+import UserShowAdapter from '../Adapters/UserShowAdapter';
+import UserShowUseCase from '../../Domain/UsesCases/UserShowUseCase';
 
 class UserController{
 
     public static async Store(req: Request, res: Response){
-        const userAdapter = new UserAdapter();
 
+        const userAdapter = new UserStoreAdapter();
         const command = userAdapter.adapt(req);
 
-        const useCase = new UserStoreUseCase(command);
-        try {
-            await useCase.execute();
+        const useCase: UserStoreUseCase = new UserStoreUseCase(command);
+        const response: IResponseCommand = await useCase.execute();
 
-            res.status(201).json({message: "The user has been successfully created"});
-        } catch (error) {
-            res.status(500).json({message: error});
-        }
+        res.status(response.GetStatus()).json(response.GetObject());
     }
 
     public static async Show(req: Request, res: Response){
 
-        try {
-            const {id} = req.params;
+        const userAdapter = new UserShowAdapter();
+        const command = userAdapter.adap(req);
 
-            const user: User | undefined = await User.findOne(id);
+        const UserShow = new UserShowUseCase();
+        const response: IResponseCommand = await UserShow.execute(command);
 
-            if(user){
-                //no funciona
-                // if (user.hasRole(new Role("admin"))) {
-                //     res.status(200).json({message: 'Ok', user});
-                // }
-
-                if(user.IsBlocked){
-                    res.status(410).json({message: "this user is blocked, you are not authorized to see it"});
-                }
-
-                res.status(200).json({message: 'Ok', user});
-            }
-            else{
-                res.status(404).json({message: "not user found"});
-            }
-
-        } catch (error) {
-            res.status(404).json({message: 'Not found user whit this id'});
-        }
+        res.status(response.GetStatus()).json(response.GetObject);
     }
 
     public static async BlockUser(req: Request, res: Response){
@@ -81,7 +62,7 @@ class UserController{
             try{
                 const role: Role = await Role.findOneOrFail({ where: { name: roleName} });
 
-                user.addRole(role);
+                // user.addRole(role);
                 user.save();
 
             } catch(e) {

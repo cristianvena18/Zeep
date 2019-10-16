@@ -3,7 +3,7 @@ import CreateUserCommand from '../Commands/CreateUserCommands';
 import schema from './Schemas/UserSchemas';
 import HashService from '../Services/HashService';
 
-class UserAdapter{
+class UserStoreAdapter{
 
     private hasher: IHashService;
 
@@ -18,12 +18,12 @@ class UserAdapter{
             throw result.error;
         }
 
-        const {name, password} = result.value;
+        const {username, password} = result.value;
 
         const hashPassword = this.hasher.Encrypt(password);
 
-        return new CreateUserCommand(name, hashPassword);
+        return new CreateUserCommand(username, hashPassword);
     }
 }
 
-export default UserAdapter;
+export default UserStoreAdapter;

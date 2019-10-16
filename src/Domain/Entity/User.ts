@@ -30,15 +30,15 @@ class User extends BaseEntity{
         this.IsBlocked = false;
     }
 
-    public hasRole(role: Role){
-        const result = this.Role.find(element => element.Name === role.Name);
-  
-        return !!result;
-      }
-  
-      public addRole(role: Role){
-        this.Role.push(role);
-      }
+    // public hasRole(role: Role) {
+    //   const result = this.Role.find(element => element.Name === role.Name);
+
+    //   return !!result;
+    // }
+
+    // public addRole(role: Role) {
+    //   this.Role.push(role);
+    // }
 }
 
 export default User;

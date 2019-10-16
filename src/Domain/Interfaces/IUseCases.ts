@@ -1,3 +1,0 @@
-interface IUseCases{
-    execute(): void;
-}
