@@ -9,35 +9,47 @@ import PostShowUseCase from '../../Domain/UsesCases/PostShowUseCase';
 class PostController {
     public static async Show(req: Request, res: Response) {
 
-        const postAdapter = new PostShowAdapter();
-        const commandAdapter = postAdapter.adapt(req);
+        try {
+            const postAdapter = new PostShowAdapter();
+            const commandAdapter = postAdapter.adapt(req);
 
-        const useCase = new PostShowUseCase(commandAdapter);
-        const commandRespose = await useCase.execute();
+            const useCase = new PostShowUseCase(commandAdapter);
+            const commandRespose = await useCase.execute();
 
-        res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+            res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+        } catch (error) {
+            res.status(400).json({ message: error });
+        }
     }
 
     public static async ShowId(req: Request, res: Response) {
 
-        const postShowAdapter = new PostShowByIdAdapter();
-        const commandAdapter = postShowAdapter.adapt(req);
+        try {
+            const postShowAdapter = new PostShowByIdAdapter();
+            const commandAdapter = postShowAdapter.adapt(req);
 
-        const useCase = new PostShowByIdUseCase(commandAdapter);
-        const commandRespose = await useCase.execute();
+            const useCase = new PostShowByIdUseCase(commandAdapter);
+            const commandRespose = await useCase.execute();
 
-        res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+            res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+        } catch (error) {
+            res.status(400).json({ message: error });
+        }
     }
 
     public static async Store(req: Request, res: Response) {
 
-        const adapter: PostStoreAdapter = new PostStoreAdapter();
-        const commandAdapter: CreatePostCommand = adapter.adapt(req);
+        try {
+            const adapter: PostStoreAdapter = new PostStoreAdapter();
+            const commandAdapter: CreatePostCommand = adapter.adapt(req);
 
-        const postUseCase = new PostStoreUseCase(commandAdapter);
-        const commandRespose: IResponseCommand = await postUseCase.execute();
+            const postUseCase = new PostStoreUseCase(commandAdapter);
+            const commandRespose: IResponseCommand = await postUseCase.execute();
 
-        res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+            res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+        } catch (error) {
+            res.status(400).json({message: error});
+        }
     }
 }
 
