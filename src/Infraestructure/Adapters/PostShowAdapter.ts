@@ -1,11 +1,14 @@
 import {Request} from 'express';
 import schemaAuthorization from './Schemas/AuthorizationSchemas';
 import schemaId from './Schemas/IdFindSchema';
-import ShowUserCommand from '../Commands/ShowUserCommand';
+import ShowPostCommand from '../Commands/ShowPostCommand';
 
-class UserShowAdapter{
+class PostShowAdapter{
+    public constructor(){
 
-    public adap(req: Request){
+    }
+
+    public adapt(req: Request){
         const {authorization} = req.headers;
         const {id} = req.body;
 
@@ -20,10 +23,8 @@ class UserShowAdapter{
             throw resultId.error;
         }
 
-        const idValid = resultId.value;
-
-        return new ShowUserCommand(idValid);
+        return new ShowPostCommand(resultId.value, resultAuthorization.value);
     }
 }
 
-export default UserShowAdapter;
+export default PostShowAdapter;

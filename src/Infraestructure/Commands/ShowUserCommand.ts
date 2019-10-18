@@ -1,15 +1,14 @@
-class ShowUserCommand implements IShowUserCommand{
+class ShowUserCommand implements IShowCommand{
     
-    private prop: any;
+    private Id: any;
 
-    public constructor(prop: any){
-        this.prop = prop;
+    public constructor(id: number){
+        this.Id = id;
     }
 
-    GetPropiety() {
-        return this.prop;
+    GetId() {
+        return this.Id;
     }
-
 }
 
 export default ShowUserCommand;

@@ -1,21 +1,43 @@
-import {Request, Response} from 'express';
-import User from '../../Domain/Entity/User';
+import { Request, Response } from 'express';
+import PostStoreAdapter from '../Adapters/PostStoreAdapter';
+import PostStoreUseCase from '../../Domain/UsesCases/PostStoreUseCase';
+import PostShowByIdAdapter from '../Adapters/PostShowByIdAdapter';
+import PostShowByIdUseCase from '../../Domain/UsesCases/PostShowByIdUseCase';
+import PostShowAdapter from '../Adapters/PostShowAdapter';
+import PostShowUseCase from '../../Domain/UsesCases/PostShowUseCase';
 
-class PostController{
-    public static async Show(req: Request, res: Response){
-        const {iduser, idpost} = req.body;
+class PostController {
+    public static async Show(req: Request, res: Response) {
 
-        const user: User | undefined = await User.findOne(iduser);
+        const postAdapter = new PostShowAdapter();
+        const commandAdapter = postAdapter.adapt(req);
 
-        
+        const useCase = new PostShowUseCase(commandAdapter);
+        const commandRespose = await useCase.execute();
+
+        res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
     }
 
-    public static async ShowId(req: Request, res: Response){
+    public static async ShowId(req: Request, res: Response) {
 
+        const postShowAdapter = new PostShowByIdAdapter();
+        const commandAdapter = postShowAdapter.adapt(req);
+
+        const useCase = new PostShowByIdUseCase(commandAdapter);
+        const commandRespose = await useCase.execute();
+
+        res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
     }
 
-    public static async Store(req: Request, res: Response){
+    public static async Store(req: Request, res: Response) {
 
+        const adapter: PostStoreAdapter = new PostStoreAdapter();
+        const commandAdapter: CreatePostCommand = adapter.adapt(req);
+
+        const postUseCase = new PostStoreUseCase(commandAdapter);
+        const commandRespose: IResponseCommand = await postUseCase.execute();
+
+        res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
     }
 }
 

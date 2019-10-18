@@ -3,10 +3,10 @@ import Comments from './Comments';
 import User from "./User";
 
 @Entity()
-class Post extends BaseEntity{
-    
+class Post extends BaseEntity {
+
     @PrimaryGeneratedColumn()
-    private Id!: number;
+    public Id!: number;
 
     @OneToOne(Post => User, User => Post)
     public idUser: number;
@@ -18,13 +18,31 @@ class Post extends BaseEntity{
     public Comments?: Comments[];
 
     @Column()
-    public content: string;
+    public Content: string;
 
-    public constructor(title: string, content: string, idUser: number){
+    public constructor(title: string, content: string, idUser: number) {
         super();
         this.Title = title;
-        this.content = content;
+        this.Content = content;
         this.idUser = idUser;
+    }
+
+    public GetObjectWithOutComments(): Object{
+        const post = {
+            title: this.Title,
+            content: this.Content
+        };
+
+        return post;
+    }
+
+    public GetObjectWithComments(): Object{
+        const post = {
+            title: this.Title,
+            content: this.Content,
+            comments: this.Comments
+        }
+        return post;
     }
 }
 

@@ -1,0 +1,3 @@
+interface IShowCommand{
+    GetId(): any;
+}

@@ -1,0 +1,3 @@
+interface IAuthorizationCommand{
+    GetAuthorization(): string;
+}
