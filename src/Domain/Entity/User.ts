@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable} from "typeorm";
 import Role from './Role';
 
 @Entity()
@@ -11,7 +11,7 @@ class User extends BaseEntity{
     public Name: string;
 
     @Column()
-    public Nickname: string;
+    public Username: string;
 
     @Column()
     public Password: string;
@@ -19,26 +19,36 @@ class User extends BaseEntity{
     @Column()
     public IsBlocked: boolean;
 
-    @ManyToMany(type => Role, Role => User)
+    @ManyToMany(type => Role)
+    @JoinTable()
     public Role?: Role[];
 
-    public constructor(command: ICreateUserCommand){
+    public constructor(username: string, password: string, ){
         super();
-        this.Name = name;
-        this.Nickname = command.GetUserName();
-        this.Password = command.GetPassword();
+        this.Name = '';
+        this.Username = username;
+        this.Password = password;
         this.IsBlocked = false;
     }
 
-    // public hasRole(role: Role) {
-    //   const result = this.Role.find(element => element.Name === role.Name);
+    public hasRole(role: string) {
+      if(this.Role){
+        const result = this.Role.find(element => element.Name === role);
+        return !!result;
+      }
+      else{
+        return false;
+      }
+    }
 
-    //   return !!result;
-    // }
-
-    // public addRole(role: Role) {
-    //   this.Role.push(role);
-    // }
+    public addRole(role: Role) {
+      if(this.Role){
+        this.Role.push(role);
+      }
+      else{
+        this.Role = [role];
+      }
+    }
 }
 
 export default User;

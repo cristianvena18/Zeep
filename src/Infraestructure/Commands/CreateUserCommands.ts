@@ -1,4 +1,4 @@
-class CreateUserCommand implements ICreateUserCommand{
+class CreateUserCommand{
     private username: string;
     private password: string;
 

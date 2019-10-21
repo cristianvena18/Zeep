@@ -2,10 +2,11 @@ import {Request} from 'express';
 import CreateUserCommand from '../Commands/CreateUserCommands';
 import schema from './Schemas/UserSchemas';
 import HashService from '../Services/HashService';
+import { InvalidData } from '../Exception/InvalidData';
 
 class UserStoreAdapter{
 
-    private hasher: IHashService;
+    private hasher: HashService;
 
     public constructor(){
         this.hasher = new HashService();
@@ -15,7 +16,7 @@ class UserStoreAdapter{
         const result = schema.validate(req.body);
 
         if(result.error){
-            throw result.error;
+            throw new InvalidData(result.error.message);
         }
 
         const {username, password} = result.value;

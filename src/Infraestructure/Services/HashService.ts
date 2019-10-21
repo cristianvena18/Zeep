@@ -1,6 +1,7 @@
 import { TokenGenerator, TokenBase } from 'ts-token-generator';
 import * as crypto from 'crypto';
 import {Hash} from 'crypto';
+import IHashService from './IHashService';
 
 class HashService implements IHashService{
     public GeneratedToken(){

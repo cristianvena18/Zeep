@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToMany, JoinTable } from "typeorm";
+import User from "./User";
 
 @Entity()
 class Role extends BaseEntity{
@@ -6,8 +7,12 @@ class Role extends BaseEntity{
     @PrimaryGeneratedColumn()
     public Id!: number;
 
-    @Column()
+    @Column({unique: true})
     public Name: string;
+
+    @ManyToMany(type => User)
+    @JoinTable()
+    public categories?: User[];
 
     public constructor(name: string){
         super();

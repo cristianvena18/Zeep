@@ -2,11 +2,11 @@ import { BaseEntity, Entity, Column, ManyToOne, PrimaryColumn } from "typeorm";
 import User from "./User";
 
 @Entity()
-class Comments extends BaseEntity{
+class Comment extends BaseEntity{
     @PrimaryColumn()
     public IdPost: number;
 
-    @ManyToOne(Comments => User, User => Comments)
+    @ManyToOne(Comments => User, User => Comment)
     public IdUser: number;
 
     @Column()
@@ -20,4 +20,4 @@ class Comments extends BaseEntity{
     }
 }
 
-export default Comments;
+export default Comment;

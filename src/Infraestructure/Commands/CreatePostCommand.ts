@@ -1,30 +1,28 @@
-class CreatePostCommand implements IAuthorizationCommand{
+import User from "../../Domain/Entity/User";
+
+class CreatePostCommand{
     
-    private idUser: number;
+    private user: User;
     private title: string;
     private content: string;
-    private authorizationToken: string;
 
-    public constructor(idUser: number, title: string, content: string, authorization: string){
-        this.idUser = idUser;
+    public constructor(user: User, title: string, content: string){
+        this.user = user;
         this.title = title;
         this.content = content;
-        this.authorizationToken = authorization;
-    }
-
-    public GetAuthorization(): string {
-        return this.authorizationToken;
     }
 
     public GetTitle(): string{
         return this.title;
     }
 
-    public GetIdUser(): number{
-        return this.idUser;
+    public GetUser(): User{
+        return this.user;
     }
 
     public GetContent(): string{
         return this.content;
     }
 }
+
+export default CreatePostCommand;

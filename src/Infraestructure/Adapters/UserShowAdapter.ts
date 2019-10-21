@@ -2,10 +2,12 @@ import {Request} from 'express';
 import schemaAuthorization from './Schemas/AuthorizationSchemas';
 import schemaId from './Schemas/IdFindSchema';
 import ShowUserCommand from '../Commands/ShowUserCommand';
+import AuthorizationService from '../Services/AuthorizationService';
+import User from '../../Domain/Entity/User';
 
 class UserShowAdapter{
 
-    public adap(req: Request){
+    public async adap(req: Request){
         const {authorization} = req.headers;
         const {id} = req.body;
 
@@ -20,9 +22,10 @@ class UserShowAdapter{
             throw resultId.error;
         }
 
-        const idValid = resultId.value;
+        const authenticator = new AuthorizationService();
+        const user: User = await authenticator.Comprobate(resultAuthorization.value);
 
-        return new ShowUserCommand(idValid);
+        return new ShowUserCommand(user, resultId.value);
     }
 }
 

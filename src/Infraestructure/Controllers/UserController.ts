@@ -2,9 +2,15 @@ import { Request, Response } from 'express';
 import User from '../../Domain/Entity/User';
 import Role from '../../Domain/Entity/Role';
 import UserStoreAdapter from '../Adapters/UserStoreAdapter';
-import UserStoreUseCase from '../../Domain/UsesCases/UserStoreUseCase';
+import UserStoreUseCase from '../../Domain/Services/UserStoreService';
 import UserShowAdapter from '../Adapters/UserShowAdapter';
-import UserShowUseCase from '../../Domain/UsesCases/UserShowUseCase';
+import UserShowUseCase from '../../Domain/Services/UserShowService';
+import UnAuthorizedException from '../../Domain/Exceptions/UnAuthorizedException';
+import { EntityNotFound } from '../Exception/EntityNotFound';
+import { DataBaseError } from '../Exception/DataBaseError';
+import { InvalidData } from '../Exception/InvalidData';
+import { SessionNotFound } from '../Exception/SessionNotFound';
+import { SessionInvalid } from '../Exception/SessionInvalid';
 
 class UserController {
 
@@ -14,13 +20,21 @@ class UserController {
             const userAdapter = new UserStoreAdapter();
             const command = userAdapter.adapt(req);
 
-            const useCase: UserStoreUseCase = new UserStoreUseCase(command);
-            const response: IResponseCommand = await useCase.execute();
+            const useCase: UserStoreUseCase = new UserStoreUseCase();
+            const response = await useCase.execute(command);
 
-            res.status(response.GetStatus()).json(response.GetObject());
+            res.status(201).json({ message: response });
 
         } catch (error) {
-            res.status(400).json({ message: error });
+            if (error instanceof DataBaseError) {
+                res.status(500).json({ message: error.message });
+            }
+            else if (error instanceof InvalidData) {
+                res.status(400).json({ message: error.message });
+            }
+            else if (error instanceof Error) {
+                res.status(500).json({ message: error.message });
+            }
         }
     }
 
@@ -28,14 +42,28 @@ class UserController {
 
         try {
             const userAdapter = new UserShowAdapter();
-            const command = userAdapter.adap(req);
+            const command = await userAdapter.adap(req);
 
-            const UserShow = new UserShowUseCase(command);
-            const response: IResponseCommand = await UserShow.execute();
+            const UserShow = new UserShowUseCase();
+            const response = await UserShow.execute(command);
 
-            res.status(response.GetStatus()).json(response.GetObject);
+            res.status(200).json({ message: 'user found', user: response });
         } catch (error) {
-            res.status(400).json({message: error});
+            if (error instanceof UnAuthorizedException) {
+                res.status(403).json({ message: error.message });
+            } else if (error instanceof SessionInvalid) {
+                res.status(403).json({ message: error.message });
+            } else if (error instanceof EntityNotFound) {
+                res.status(404).json({ message: error.message });
+            } else if (error instanceof SessionNotFound) {
+                //revisar
+            } else if (error instanceof InvalidData) {
+                res.status(400).json({ message: error.message })
+            } else if (error instanceof DataBaseError) {
+                res.status(500).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: error.message });
+            }
         }
     }
 

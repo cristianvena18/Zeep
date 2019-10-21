@@ -1,39 +1,73 @@
 import { Request, Response } from 'express';
 import PostStoreAdapter from '../Adapters/PostStoreAdapter';
-import PostStoreUseCase from '../../Domain/UsesCases/PostStoreUseCase';
-import PostShowByIdAdapter from '../Adapters/PostShowByIdAdapter';
-import PostShowByIdUseCase from '../../Domain/UsesCases/PostShowByIdUseCase';
+import PostStoreUseCase from '../../Domain/Services/PostStoreService';
 import PostShowAdapter from '../Adapters/PostShowAdapter';
-import PostShowUseCase from '../../Domain/UsesCases/PostShowUseCase';
+import PostsShowAdapter from '../Adapters/PostsShowAdapter';
+import PostShowUseCase from '../../Domain/Services/PostsShowService';
+import PostShowService from '../../Domain/Services/PostShowService';
+import UnAuthorizedException from '../../Domain/Exceptions/UnAuthorizedException';
+import { SessionInvalid } from '../Exception/SessionInvalid';
+import { EntityNotFound } from '../Exception/EntityNotFound';
+import { SessionNotFound } from '../Exception/SessionNotFound';
+import { DataBaseError } from '../Exception/DataBaseError';
+import { InvalidData } from '../Exception/InvalidData';
 
 class PostController {
     public static async Show(req: Request, res: Response) {
 
         try {
-            const postAdapter = new PostShowAdapter();
-            const commandAdapter = postAdapter.adapt(req);
+            const postAdapter = new PostsShowAdapter();
+            const commandAdapter = await postAdapter.adapt(req);
 
-            const useCase = new PostShowUseCase(commandAdapter);
-            const commandRespose = await useCase.execute();
+            const useCase = new PostShowUseCase();
+            const posts = await useCase.execute(commandAdapter);
 
-            res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+            res.status(200).json({ message: 'ok', posts });
         } catch (error) {
-            res.status(400).json({ message: error });
+            if (error instanceof UnAuthorizedException) {
+                res.status(403).json({ message: error.message });
+            } else if (error instanceof SessionInvalid) {
+                res.status(403).json({ message: error.message });
+            } else if (error instanceof EntityNotFound) {
+                res.status(404).json({ message: error.message });
+            } else if (error instanceof SessionNotFound) {
+                //revisar
+            } else if (error instanceof InvalidData) {
+                res.status(400).json({ message: error.message })
+            } else if (error instanceof DataBaseError) {
+                res.status(500).json({ message: error.message });
+            } else{
+                res.status(500).json({message: error.message});
+            }
         }
     }
 
     public static async ShowId(req: Request, res: Response) {
 
         try {
-            const postShowAdapter = new PostShowByIdAdapter();
-            const commandAdapter = postShowAdapter.adapt(req);
+            const postShowAdapter = new PostShowAdapter();
+            const commandAdapter = await postShowAdapter.adapt(req);
 
-            const useCase = new PostShowByIdUseCase(commandAdapter);
-            const commandRespose = await useCase.execute();
+            const useCase = new PostShowService();
+            const post = await useCase.execute(commandAdapter);
 
-            res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+            res.status(200).json({ message: 'ok', posts: [post] });
         } catch (error) {
-            res.status(400).json({ message: error });
+            if (error instanceof UnAuthorizedException) {
+                res.status(403).json({ message: error.message });
+            } else if (error instanceof SessionInvalid) {
+                res.status(403).json({ message: error.message });
+            } else if (error instanceof EntityNotFound) {
+                res.status(404).json({ message: error.message });
+            } else if (error instanceof SessionNotFound) {
+                //revisar
+            } else if (error instanceof InvalidData) {
+                res.status(400).json({ message: error.message })
+            } else if (error instanceof DataBaseError) {
+                res.status(500).json({ message: error.message });
+            } else{
+                res.status(500).json({message: error.message});
+            }
         }
     }
 
@@ -41,14 +75,28 @@ class PostController {
 
         try {
             const adapter: PostStoreAdapter = new PostStoreAdapter();
-            const commandAdapter: CreatePostCommand = adapter.adapt(req);
+            const commandAdapter = await adapter.adapt(req);
 
-            const postUseCase = new PostStoreUseCase(commandAdapter);
-            const commandRespose: IResponseCommand = await postUseCase.execute();
+            const postUseCase = new PostStoreUseCase();
+            await postUseCase.execute(commandAdapter);
 
-            res.status(commandRespose.GetStatus()).json(commandRespose.GetObject());
+            res.status(200).json({ message: 'post saved' });
         } catch (error) {
-            res.status(400).json({message: error});
+            if (error instanceof UnAuthorizedException) {
+                res.status(403).json({ message: error.message });
+            } else if (error instanceof SessionInvalid) {
+                res.status(403).json({ message: error.message });
+            } else if (error instanceof EntityNotFound) {
+                res.status(404).json({ message: error.message });
+            } else if (error instanceof SessionNotFound) {
+                //revisar
+            } else if (error instanceof InvalidData) {
+                res.status(400).json({ message: error.message })
+            } else if (error instanceof DataBaseError) {
+                res.status(500).json({ message: error.message });
+            } else{
+                res.status(500).json({message: error.message});
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ class LoginController {
             res.status(400).json({ message: "not username and/or password found" });
         }
 
-        const user: User | undefined = await User.findOne({ Nickname: nickname });
+        const user: User | undefined = await User.findOne({ Username: nickname });
 
         if (user) {
             const hasher = new HashService();
@@ -27,7 +27,7 @@ class LoginController {
                 const token = hasher.GeneratedToken();
                 const session = new Session(user.Id, token);
                 await session.save();
-                res.status(200).json({iduser: user.Id, name: user.Name, nickname: user.Nickname, token: token });
+                res.status(200).json({iduser: user.Id, name: user.Name, nickname: user.Username, token: token });
             }
             else {
                 res.status(400).json({ message: 'not valid password!' });

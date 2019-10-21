@@ -1,29 +1,41 @@
-import {Request} from 'express';
+import { Request } from "express";
 import schemaAuthorization from './Schemas/AuthorizationSchemas';
 import schemaId from './Schemas/IdFindSchema';
+import User from "../../Domain/Entity/User";
 import ShowPostCommand from '../Commands/ShowPostCommand';
+import UnAuthorizedException from "../../Domain/Exceptions/UnAuthorizedException";
+import AuthorizationService from "../Services/AuthorizationService";
 
-class PostShowAdapter{
-    public constructor(){
-
-    }
-
-    public adapt(req: Request){
-        const {authorization} = req.headers;
-        const {id} = req.body;
+class PostShowAdapter {
+    public async adapt(req: Request): Promise<ShowPostCommand> {
+        const { authorization } = req.headers;
+        const { iduser, idpost } = req.body;
 
         const resultAuthorization = schemaAuthorization.validate(authorization);
-        const resultId = schemaId.validate(id);
+        const resultIdUser = schemaId.validate({ id: iduser });
+        const resultIdPost = schemaId.validate({id: idpost});
 
-        if(resultAuthorization.error){
+        if (resultAuthorization.error) {
             throw resultAuthorization.error;
         }
 
-        if(resultId.error){
-            throw resultId.error;
+        if (resultIdUser.error) {
+            throw resultIdUser.error;
         }
 
-        return new ShowPostCommand(resultId.value, resultAuthorization.value);
+        if(resultIdPost.error){
+            throw resultIdPost.error;
+        }
+
+        const validateAuth = new AuthorizationService();
+        
+        const validAuth: User = await validateAuth.Comprobate(resultAuthorization.value);
+
+        if(validAuth){
+            return new ShowPostCommand(resultIdUser.value, resultIdPost.value, resultAuthorization.value);
+        }else{
+            throw new UnAuthorizedException('not valid authorization, login again');
+        }
     }
 }
 

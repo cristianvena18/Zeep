@@ -1,13 +1,21 @@
-class ShowUserCommand implements IShowCommand{
-    
-    private Id: any;
+import User from "../../Domain/Entity/User";
 
-    public constructor(id: number){
-        this.Id = id;
+class ShowUserCommand{
+    
+    private user: User;
+    private Id: number;
+
+    public constructor(user: User, idSearchedUser: number){
+        this.user = user;
+        this.Id = idSearchedUser; 
     }
 
-    GetId() {
+    GetId(): number{
         return this.Id;
+    }
+
+    GetUser(): User {
+        return this.user;
     }
 }
 

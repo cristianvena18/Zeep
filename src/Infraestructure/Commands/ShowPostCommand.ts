@@ -1,18 +1,26 @@
-class ShowPostCommand implements IShowCommand, IAuthorizationCommand{
-    private Id: number;
-    private authorization: string;
+class ShowPostsCommand{
     
-    constructor(id: number, authorization: string){
-        this.Id = id;
-        this.authorization = authorization;
+    private IdUser: number;
+    private IdPost: number;
+    private token: string;
+
+    public constructor(idUser: number, idPost: number, authorization: string){
+        this.IdUser = idUser;
+        this.IdPost = idPost;
+        this.token = authorization;
     }
 
-    GetId() {
-        return this.Id;
+    public GetIdUser() {
+        return this.IdUser;
     }
-    GetAuthorization(): string {
-        return this.authorization;
+
+    public GetIdPost(){
+        return this.IdPost;
+    }
+
+    public GetAuthorization(){
+        return this.token;
     }
 }
 
-export default ShowPostCommand;
+export default ShowPostsCommand;

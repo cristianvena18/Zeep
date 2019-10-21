@@ -1,4 +1,4 @@
-interface IHashService{
+export default interface IHashService{
     GeneratedToken(): string;
 
     Encrypt(line: string): string
