@@ -1,25 +1,19 @@
 class ShowPostsCommand{
     
-    private IdUser: number;
+    private user: number;
     private IdPost: number;
-    private token: string;
 
-    public constructor(idUser: number, idPost: number, authorization: string){
-        this.IdUser = idUser;
+    public constructor(user: number, idPost: number){
+        this.user = user;
         this.IdPost = idPost;
-        this.token = authorization;
     }
 
-    public GetIdUser() {
-        return this.IdUser;
+    public GetIdUser(): number {
+        return this.user;
     }
 
-    public GetIdPost(){
+    public GetIdPost(): number{
         return this.IdPost;
-    }
-
-    public GetAuthorization(){
-        return this.token;
     }
 }
 

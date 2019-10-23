@@ -4,6 +4,7 @@ import {Hash} from 'crypto';
 import IHashService from './IHashService';
 
 class HashService implements IHashService{
+
     public GeneratedToken(){
         const tokgen2 = new TokenGenerator({ bitSize: 512, baseEncoding: TokenBase.BASE62 });
 

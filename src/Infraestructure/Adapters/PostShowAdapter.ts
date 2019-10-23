@@ -4,9 +4,17 @@ import schemaId from './Schemas/IdFindSchema';
 import User from "../../Domain/Entity/User";
 import ShowPostCommand from '../Commands/ShowPostCommand';
 import UnAuthorizedException from "../../Domain/Exceptions/UnAuthorizedException";
-import AuthorizationService from "../Services/AuthorizationService";
+import { inject } from "inversify";
+import CurrentUserService from "../Services/CurrentUserService";
 
 class PostShowAdapter {
+
+    private currentUserService: CurrentUserService;
+
+    constructor(@inject(CurrentUserService) currentUserService: CurrentUserService){
+        this.currentUserService = currentUserService;
+    }
+
     public async adapt(req: Request): Promise<ShowPostCommand> {
         const { authorization } = req.headers;
         const { iduser, idpost } = req.body;
@@ -26,16 +34,10 @@ class PostShowAdapter {
         if(resultIdPost.error){
             throw resultIdPost.error;
         }
-
-        const validateAuth = new AuthorizationService();
         
-        const validAuth: User = await validateAuth.Comprobate(resultAuthorization.value);
+        const validAuth: number = await this.currentUserService.getUserId(resultAuthorization.value);
 
-        if(validAuth){
-            return new ShowPostCommand(resultIdUser.value, resultIdPost.value, resultAuthorization.value);
-        }else{
-            throw new UnAuthorizedException('not valid authorization, login again');
-        }
+        return new ShowPostCommand(validAuth, resultIdPost.value);
     }
 }
 

@@ -2,11 +2,13 @@ import User from "../Entity/User";
 import CreateUserCommand from "../../Infraestructure/Commands/CreateUserCommands";
 import { DataBaseError } from "../../Infraestructure/Exception/DataBaseError";
 
-class UserStoreService {
+class UserStoreHandler {
 
     public async execute(command: CreateUserCommand): Promise<string> {
 
-        const user = new User(command.GetUserName(), command.GetPassword());
+        const user = new User();
+        user.password = command.GetPassword();
+        user.username = command.GetUserName();
 
         try {
             await user.save();
@@ -17,4 +19,4 @@ class UserStoreService {
     }
 }
 
-export default UserStoreService;
+export default UserStoreHandler;

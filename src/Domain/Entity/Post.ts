@@ -1,46 +1,34 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from "typeorm";
-import Comments from './Comment';
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import User from "./User";
 
 @Entity()
 class Post extends BaseEntity {
 
     @PrimaryGeneratedColumn()
-    public Id!: number;
-
-    @OneToOne(Post => User, User => Post)
-    public idUser: number;
+    public id: number;
 
     @Column()
-    public Title: string;
-
-    @OneToMany(Post => Comments, Comments => Post)
-    public Comments?: Comments[];
+    public title: string;
 
     @Column()
-    public Content: string;
+    public body: string;
 
-    public constructor(title: string, content: string, idUser: number) {
-        super();
-        this.Title = title;
-        this.Content = content;
-        this.idUser = idUser;
-    }
+    @OneToMany(type => User, user => user.posts)
+    public user: User;
 
-    public GetObjectWithOutComments(): Object{
+    public GetObjectWithOutComments(): Object {
         const post = {
-            title: this.Title,
-            content: this.Content
+            title: this.title,
+            content: this.body
         };
 
         return post;
     }
 
-    public GetObjectWithComments(): Object{
+    public GetObjectWithComments(): Object {
         const post = {
-            title: this.Title,
-            content: this.Content,
-            comments: this.Comments
+            title: this.title,
+            content: this.body
         }
         return post;
     }

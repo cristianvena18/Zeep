@@ -1,43 +1,41 @@
-import {Request} from 'express';
+import { Request } from 'express';
 import schemaAuthorization from './Schemas/AuthorizationSchemas';
 import schemaId from './Schemas/IdFindSchema';
 import ShowPostCommand from '../Commands/ShowPostsCommand';
-import AuthorizationService from '../Services/AuthorizationService';
 import UnAuthorizedException from '../../Domain/Exceptions/UnAuthorizedException';
+import { inject } from 'inversify';
+import CurrentUserService from '../Services/CurrentUserService';
 
-class PostsShowAdapter{
-    public constructor(){
+class PostsShowAdapter {
 
+    private currentUserService: CurrentUserService;
+
+    public constructor(@inject(CurrentUserService) currentUserService: CurrentUserService) {
+        this.currentUserService = currentUserService;
     }
 
-    public async adapt(req: Request){
-        const {authorization} = req.headers;
-        const {id} = req.body;
+    public async adapt(req: Request) {
+        const { authorization } = req.headers;
+        const { id } = req.body;
 
-        if(authorization === ''){
+        if (authorization === '') {
             throw new UnAuthorizedException('invalid authorization token');
         }
 
         const resultAuthorization = schemaAuthorization.validate(authorization);
         const resultId = schemaId.validate(id);
 
-        if(resultAuthorization.error){
+        if (resultAuthorization.error) {
             throw resultAuthorization.error;
         }
 
-        if(resultId.error){
+        if (resultId.error) {
             throw resultId.error;
         }
 
-        try {
-            const authentication = new AuthorizationService();
-            const user = await authentication.Comprobate(resultAuthorization.value);
+        const user = await this.currentUserService.getUserId(resultAuthorization.value);
 
-            return new ShowPostCommand(user);
-        } catch (error) {
-            throw error;
-        }
-        
+        return new ShowPostCommand(user);
     }
 }
 

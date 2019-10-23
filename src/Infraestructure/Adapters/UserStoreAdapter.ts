@@ -3,13 +3,16 @@ import CreateUserCommand from '../Commands/CreateUserCommands';
 import schema from './Schemas/UserSchemas';
 import HashService from '../Services/HashService';
 import { InvalidData } from '../Exception/InvalidData';
+import { inject } from 'inversify';
+import IHashService from '../Services/IHashService';
+import TYPES from '../../types';
 
 class UserStoreAdapter{
 
     private hasher: HashService;
 
-    public constructor(){
-        this.hasher = new HashService();
+    public constructor(@inject(TYPES.IHashService) hashService: IHashService){
+        this.hasher = hashService;
     }
 
     public adapt = (req: Request): CreateUserCommand => {

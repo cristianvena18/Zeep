@@ -1,21 +1,13 @@
-import User from "../../Domain/Entity/User";
-
 class ShowUserCommand{
     
-    private user: User;
     private Id: number;
 
-    public constructor(user: User, idSearchedUser: number){
-        this.user = user;
+    public constructor(idSearchedUser: number){
         this.Id = idSearchedUser; 
     }
 
     GetId(): number{
         return this.Id;
-    }
-
-    GetUser(): User {
-        return this.user;
     }
 }
 

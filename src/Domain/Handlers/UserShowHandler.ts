@@ -4,25 +4,24 @@ import { EntityNotFound } from "../../Infraestructure/Exception/EntityNotFound";
 import { DataBaseError } from "../../Infraestructure/Exception/DataBaseError";
 import UnAuthorizedException from "../Exceptions/UnAuthorizedException";
 
-class UserShowService {
+class UserShowHandler {
 
     constructor() {
     }
 
     public async execute(command: ShowUserCommand) {
-        const _user: User = command.GetUser();
         const id: number = command.GetId();
 
         try {
-            const userSearched = await User.findOne({ Id: id });
+            const userSearched = await User.findOne(id);
 
             if (userSearched) {
                 //no funciona
-                if (_user.hasRole('admin')) {
-                    return userSearched;
-                }
+                // if (_user.hasRole('admin')) {
+                //     return userSearched;
+                // }
 
-                if (userSearched.IsBlocked) {
+                if (userSearched.isBlocked) {
                     throw new UnAuthorizedException('user blocked!');
                 }
 
@@ -38,4 +37,4 @@ class UserShowService {
 
 }
 
-export default UserShowService;
+export default UserShowHandler;

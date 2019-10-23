@@ -2,25 +2,29 @@ import { Request, Response } from 'express';
 import User from '../../Domain/Entity/User';
 import Role from '../../Domain/Entity/Role';
 import UserStoreAdapter from '../Adapters/UserStoreAdapter';
-import UserStoreUseCase from '../../Domain/Services/UserStoreService';
+import UserStoreHandler from '../../Domain/Handlers/UserStoreHandler';
 import UserShowAdapter from '../Adapters/UserShowAdapter';
-import UserShowUseCase from '../../Domain/Services/UserShowService';
+import UserShowHandler from '../../Domain/Handlers/UserShowHandler';
 import UnAuthorizedException from '../../Domain/Exceptions/UnAuthorizedException';
 import { EntityNotFound } from '../Exception/EntityNotFound';
 import { DataBaseError } from '../Exception/DataBaseError';
 import { InvalidData } from '../Exception/InvalidData';
 import { SessionNotFound } from '../Exception/SessionNotFound';
 import { SessionInvalid } from '../Exception/SessionInvalid';
+import { injectable } from 'inversify';
+import TYPES from '../../types';
+import container from '../../inversify.config';
 
+@injectable()
 class UserController {
 
-    public static async Store(req: Request, res: Response) {
+    public async Store(req: Request, res: Response) {
 
         try {
-            const userAdapter = new UserStoreAdapter();
+            const userAdapter = new UserStoreAdapter(container.get(TYPES.IHashService));
             const command = userAdapter.adapt(req);
 
-            const useCase: UserStoreUseCase = new UserStoreUseCase();
+            const useCase: UserStoreHandler = new UserStoreHandler();
             const response = await useCase.execute(command);
 
             res.status(201).json({ message: response });
@@ -38,13 +42,13 @@ class UserController {
         }
     }
 
-    public static async Show(req: Request, res: Response) {
+    public async Show(req: Request, res: Response) {
 
         try {
             const userAdapter = new UserShowAdapter();
             const command = await userAdapter.adap(req);
 
-            const UserShow = new UserShowUseCase();
+            const UserShow: UserShowHandler = new UserShowHandler();
             const response = await UserShow.execute(command);
 
             res.status(200).json({ message: 'user found', user: response });
@@ -67,7 +71,7 @@ class UserController {
         }
     }
 
-    public static async BlockUser(req: Request, res: Response) {
+    public async BlockUser(req: Request, res: Response) {
         const { iduser, authorization } = req.body;
 
         if (!iduser) {
@@ -82,13 +86,13 @@ class UserController {
         if (!user) {
             res.status(404).json({ message: "Not user found" });
         } else {
-            user.IsBlocked = true;
+            user.isBlocked = true;
             user.save();
             res.status(201).json({ message: "user blocked!" });
         }
     }
 
-    public static async Update(req: Request, res: Response) {
+    public async Update(req: Request, res: Response) {
 
         const { id } = req.params;
         const roleName = req.body.role;

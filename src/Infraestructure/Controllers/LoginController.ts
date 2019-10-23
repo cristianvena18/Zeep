@@ -3,31 +3,40 @@ import { Request, Response } from 'express';
 import Session from '../../Domain/Entity/Sessions';
 import { DeleteResult } from 'typeorm';
 import HashService from '../Services/HashService';
+import { inject, injectable } from 'inversify';
+import IHashService from '../Services/IHashService';
+import TYPES from '../../types';
 
 
+@injectable()
 class LoginController {
 
-    public static async LogIn(req: Request, res: Response) {
+    private hashService: IHashService;
 
-        const { nickname, password } = req.body;
+    public constructor(@inject(TYPES.IHashService) hashService: IHashService) {
+        this.hashService = hashService;
+    }
 
-        if (!nickname || !password) {
+    public async LogIn(req: Request, res: Response) {
+
+        const { username, password } = req.body;
+
+        if (!username || !password) {
             res.status(400).json({ message: "not username and/or password found" });
         }
 
-        const user: User | undefined = await User.findOne({ Username: nickname });
+        const user: User | undefined = await User.findOne({ username: username });
 
         if (user) {
-            const hasher = new HashService();
 
-            const hashPassword = hasher.Encrypt(password);
-            const valid: boolean = hasher.Equals(user.Password, hashPassword);
+            const hashPassword = this.hashService.Encrypt(password);
+            const valid: boolean = this.hashService.Equals(user.password, hashPassword);
 
             if (valid) {
-                const token = hasher.GeneratedToken();
-                const session = new Session(user.Id, token);
+                const token = this.hashService.GeneratedToken();
+                const session = new Session(user.id, token);
                 await session.save();
-                res.status(200).json({iduser: user.Id, name: user.Name, nickname: user.Username, token: token });
+                res.status(200).json({ name: user.username, username: user.username, token: token });
             }
             else {
                 res.status(400).json({ message: 'not valid password!' });
@@ -38,15 +47,15 @@ class LoginController {
         }
     }
 
-    public static async LogOut(req: Request, res: Response) {
+    public async LogOut(req: Request, res: Response) {
         try {
-            const user: User | undefined = await User.findOne({ Id: req.body.iduser });
+            const user: User | undefined = await User.findOne({ id: req.body.iduser });
 
             if (!user) {
                 res.status(404).json({ message: 'not user found' });
             }
             else {
-                const a: DeleteResult = await Session.delete({ IdUser: user.Id });
+                const a: DeleteResult = await Session.delete({ IdUser: user.id });
 
                 if (a.affected === 1) {
                     res.status(200).json({ message: 'successful logout!' });

@@ -2,11 +2,11 @@ import User from "../../Domain/Entity/User";
 
 class CreatePostCommand{
     
-    private user: User;
+    private user: number;
     private title: string;
     private content: string;
 
-    public constructor(user: User, title: string, content: string){
+    public constructor(user: number, title: string, content: string){
         this.user = user;
         this.title = title;
         this.content = content;
@@ -16,7 +16,7 @@ class CreatePostCommand{
         return this.title;
     }
 
-    public GetUser(): User{
+    public GetUser(): number{
         return this.user;
     }
 
