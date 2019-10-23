@@ -5,70 +5,42 @@ import UserStoreAdapter from '../Adapters/UserStoreAdapter';
 import UserStoreHandler from '../../Domain/Handlers/UserStoreHandler';
 import UserShowAdapter from '../Adapters/UserShowAdapter';
 import UserShowHandler from '../../Domain/Handlers/UserShowHandler';
-import UnAuthorizedException from '../../Domain/Exceptions/UnAuthorizedException';
-import { EntityNotFound } from '../Exception/EntityNotFound';
-import { DataBaseError } from '../Exception/DataBaseError';
-import { InvalidData } from '../Exception/InvalidData';
-import { SessionNotFound } from '../Exception/SessionNotFound';
-import { SessionInvalid } from '../Exception/SessionInvalid';
-import { injectable } from 'inversify';
-import TYPES from '../../types';
-import container from '../../inversify.config';
+import { injectable, inject } from 'inversify';
 
 @injectable()
 class UserController {
 
+    private userStoreAdapter: UserStoreAdapter;
+    private userStoreHandler: UserStoreHandler;
+    private userShowAdapter: UserShowAdapter;
+    private userShowHandler: UserShowHandler;
+
+    constructor(
+        @inject(UserStoreAdapter) userStoreAdapter: UserStoreAdapter,
+        @inject(UserStoreHandler) userStoreHandler: UserStoreHandler,
+        @inject(UserShowAdapter) userShowAdapter: UserShowAdapter,
+        @inject(UserShowHandler) userShowHandler: UserShowHandler 
+    ){
+        this.userShowAdapter = userShowAdapter;
+        this.userShowHandler = userShowHandler;
+        this.userStoreAdapter = userStoreAdapter;
+        this.userStoreHandler = userStoreHandler;
+    }
+
     public async Store(req: Request, res: Response) {
 
-        try {
-            const userAdapter = new UserStoreAdapter(container.get(TYPES.IHashService));
-            const command = userAdapter.adapt(req);
+        const command = this.userStoreAdapter.adapt(req);
+        const response = await this.userStoreHandler.execute(command);
 
-            const useCase: UserStoreHandler = new UserStoreHandler();
-            const response = await useCase.execute(command);
-
-            res.status(201).json({ message: response });
-
-        } catch (error) {
-            if (error instanceof DataBaseError) {
-                res.status(500).json({ message: error.message });
-            }
-            else if (error instanceof InvalidData) {
-                res.status(400).json({ message: error.message });
-            }
-            else if (error instanceof Error) {
-                res.status(500).json({ message: error.message });
-            }
-        }
+        res.status(201).json({ message: response });
     }
 
     public async Show(req: Request, res: Response) {
 
-        try {
-            const userAdapter = new UserShowAdapter();
-            const command = await userAdapter.adap(req);
+        const command = await this.userShowAdapter.adap(req);
+        const response = await this.userShowHandler.execute(command);
 
-            const UserShow: UserShowHandler = new UserShowHandler();
-            const response = await UserShow.execute(command);
-
-            res.status(200).json({ message: 'user found', user: response });
-        } catch (error) {
-            if (error instanceof UnAuthorizedException) {
-                res.status(403).json({ message: error.message });
-            } else if (error instanceof SessionInvalid) {
-                res.status(403).json({ message: error.message });
-            } else if (error instanceof EntityNotFound) {
-                res.status(404).json({ message: error.message });
-            } else if (error instanceof SessionNotFound) {
-                //revisar
-            } else if (error instanceof InvalidData) {
-                res.status(400).json({ message: error.message })
-            } else if (error instanceof DataBaseError) {
-                res.status(500).json({ message: error.message });
-            } else {
-                res.status(500).json({ message: error.message });
-            }
-        }
+        res.status(200).json({ message: 'user found', user: response });
     }
 
     public async BlockUser(req: Request, res: Response) {

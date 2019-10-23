@@ -2,7 +2,6 @@ import User from '../../Domain/Entity/User';
 import { Request, Response } from 'express';
 import Session from '../../Domain/Entity/Sessions';
 import { DeleteResult } from 'typeorm';
-import HashService from '../Services/HashService';
 import { inject, injectable } from 'inversify';
 import IHashService from '../Services/IHashService';
 import TYPES from '../../types';

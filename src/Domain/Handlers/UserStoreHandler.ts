@@ -1,7 +1,9 @@
 import User from "../Entity/User";
 import CreateUserCommand from "../../Infraestructure/Commands/CreateUserCommands";
-import { DataBaseError } from "../../Infraestructure/Exception/DataBaseError";
+import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
+import { injectable } from "inversify";
 
+@injectable()
 class UserStoreHandler {
 
     public async execute(command: CreateUserCommand): Promise<string> {
@@ -14,7 +16,7 @@ class UserStoreHandler {
             await user.save();
             return "user successfully created";
         } catch (error) {
-            throw new DataBaseError('error db \n' + error);
+            throw new ApplicationError('error db', error);
         }
     }
 }

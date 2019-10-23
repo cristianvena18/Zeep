@@ -3,7 +3,9 @@ import CreatePostCommand from '../../Infraestructure/Commands/CreatePostCommand'
 import { DataBaseError } from "../../Infraestructure/Exception/DataBaseError";
 import User from "../Entity/User";
 import { EntityNotFound } from "../../Infraestructure/Exception/EntityNotFound";
+import { injectable } from "inversify";
 
+@injectable()
 class PostStoreHandler {
 
     public async execute(command: CreatePostCommand): Promise<void> {

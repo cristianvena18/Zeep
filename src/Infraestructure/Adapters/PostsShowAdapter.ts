@@ -2,10 +2,11 @@ import { Request } from 'express';
 import schemaAuthorization from './Schemas/AuthorizationSchemas';
 import schemaId from './Schemas/IdFindSchema';
 import ShowPostCommand from '../Commands/ShowPostsCommand';
-import UnAuthorizedException from '../../Domain/Exceptions/UnAuthorizedException';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import CurrentUserService from '../Services/CurrentUserService';
+import { InfraestructureError } from '../utils/errors/InfraestructureError';
 
+@injectable()
 class PostsShowAdapter {
 
     private currentUserService: CurrentUserService;
@@ -19,18 +20,18 @@ class PostsShowAdapter {
         const { id } = req.body;
 
         if (authorization === '') {
-            throw new UnAuthorizedException('invalid authorization token');
+            throw new InfraestructureError('invalid authorization token', 403);
         }
 
         const resultAuthorization = schemaAuthorization.validate(authorization);
         const resultId = schemaId.validate(id);
 
         if (resultAuthorization.error) {
-            throw resultAuthorization.error;
+            throw new InfraestructureError(resultAuthorization.error.message, 400);
         }
 
         if (resultId.error) {
-            throw resultId.error;
+            throw new InfraestructureError(resultId.error.message, 400);
         }
 
         const user = await this.currentUserService.getUserId(resultAuthorization.value);

@@ -3,10 +3,11 @@ import schemaAuthorization from './Schemas/AuthorizationSchemas';
 import schemaId from './Schemas/IdFindSchema';
 import schemaTitleAndContent from './Schemas/TitleAndContentSchema';
 import CreatePostCommand from '../Commands/CreatePostCommand';
-import { InvalidData } from '../Exception/InvalidData';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import CurrentUserService from '../Services/CurrentUserService';
+import { InfraestructureError } from '../utils/errors/InfraestructureError';
 
+@injectable()
 class PostStoreAdapter {
 
     private currentUserService: CurrentUserService;
@@ -24,15 +25,15 @@ class PostStoreAdapter {
         const resultTitle = schemaTitleAndContent.validate(title, content);
 
         if(resultAuthorization.error){
-            throw new InvalidData(resultAuthorization.error.message);
+            throw new InfraestructureError(resultAuthorization.error.message, 400);
         }
 
         if(resultId.error){
-            throw new InvalidData(resultId.error.message);
+            throw new InfraestructureError(resultId.error.message, 400);
         }
 
         if(resultTitle.error){
-            throw new InvalidData(resultTitle.error.message);
+            throw new InfraestructureError(resultTitle.error.message, 400);
         }
 
         const user: number = await this.currentUserService.getUserId(resultAuthorization.value);

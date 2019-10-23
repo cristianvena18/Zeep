@@ -2,11 +2,12 @@ import {Request} from 'express';
 import CreateUserCommand from '../Commands/CreateUserCommands';
 import schema from './Schemas/UserSchemas';
 import HashService from '../Services/HashService';
-import { InvalidData } from '../Exception/InvalidData';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import IHashService from '../Services/IHashService';
 import TYPES from '../../types';
+import { InfraestructureError } from '../utils/errors/InfraestructureError';
 
+@injectable()
 class UserStoreAdapter{
 
     private hasher: HashService;
@@ -19,7 +20,7 @@ class UserStoreAdapter{
         const result = schema.validate(req.body);
 
         if(result.error){
-            throw new InvalidData(result.error.message);
+            throw new InfraestructureError(result.error.message, 400);
         }
 
         const {username, password} = result.value;

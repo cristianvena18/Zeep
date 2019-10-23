@@ -1,10 +1,12 @@
 import ShowPostCommand from "../../Infraestructure/Commands/ShowPostsCommand";
 import Post from "../Entity/Post";
-import { DataBaseError } from "../../Infraestructure/Exception/DataBaseError";
 import User from "../Entity/User";
 import { Roles } from "../Enums/Roles";
+import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
+import { injectable } from "inversify";
 
-class PostShowHandler{
+@injectable()
+class AllPostsShowHandler{
 
     public async execute(command: ShowPostCommand): Promise<Post[]> {
         try {
@@ -17,10 +19,10 @@ class PostShowHandler{
                 return Post.find({where: { limit: 10} })
             }
         } catch (error) {
-            throw new DataBaseError(error);
+            throw new ApplicationError('error db', error);
         }
     }
 
 }
 
-export default PostShowHandler;
+export default AllPostsShowHandler;
