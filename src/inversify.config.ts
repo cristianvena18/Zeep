@@ -14,7 +14,7 @@ import PostShowAdapter from "./Infraestructure/Adapters/PostShowAdapter";
 import AllPostsShowHandler from "./Domain/Handlers/AllPostsShowHandler";
 import PostStoreAdapter from "./Infraestructure/Adapters/PostStoreAdapter";
 import PostStoreHandler from "./Domain/Handlers/PostStoreHandler";
-import PostShowHandler from "./Domain/Handlers/AllPostsShowHandler";
+import PostShowHandler from "./Domain/Handlers/PostShowHandler";
 import UserShowAdapter from "./Infraestructure/Adapters/UserShowAdapter";
 import UserStoreAdapter from "./Infraestructure/Adapters/UserStoreAdapter";
 import UserShowHandler from "./Domain/Handlers/UserShowHandler";
@@ -37,7 +37,7 @@ container.bind<UserStoreAdapter>(UserStoreAdapter).toSelf();
 // Handlers
 container.bind<PostStoreHandler>(PostStoreHandler).toSelf();
 container.bind<PostShowHandler>(PostShowHandler).toSelf();
-//container.bind<AllPostsShowHandler>(AllPostsShowHandler).toSelf();
+container.bind<AllPostsShowHandler>(AllPostsShowHandler).toSelf();
 container.bind<UserShowHandler>(UserShowHandler).toSelf();
 container.bind<UserStoreHandler>(UserStoreHandler).toSelf();
 
