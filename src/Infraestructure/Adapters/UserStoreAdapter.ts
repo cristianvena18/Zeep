@@ -16,7 +16,7 @@ class UserStoreAdapter{
         this.hasher = hashService;
     }
 
-    public adapt = (req: Request): CreateUserCommand => {
+    public adapt(req: Request): CreateUserCommand{
         const result = schema.validate(req.body);
 
         if(result.error){

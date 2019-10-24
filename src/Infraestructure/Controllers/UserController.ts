@@ -16,15 +16,15 @@ class UserController {
     private userShowHandler: UserShowHandler;
 
     constructor(
-        @inject(UserStoreAdapter) userStoreAdapter: UserStoreAdapter,
-        @inject(UserStoreHandler) userStoreHandler: UserStoreHandler,
-        @inject(UserShowAdapter) userShowAdapter: UserShowAdapter,
-        @inject(UserShowHandler) userShowHandler: UserShowHandler 
+        @inject(UserStoreAdapter) storeAdapter: UserStoreAdapter,
+        @inject(UserStoreHandler) storeHandler: UserStoreHandler,
+        @inject(UserShowAdapter) showAdapter: UserShowAdapter,
+        @inject(UserShowHandler) showHandler: UserShowHandler 
     ){
-        this.userShowAdapter = userShowAdapter;
-        this.userShowHandler = userShowHandler;
-        this.userStoreAdapter = userStoreAdapter;
-        this.userStoreHandler = userStoreHandler;
+        this.userShowAdapter = showAdapter;
+        this.userShowHandler = showHandler;
+        this.userStoreAdapter = storeAdapter;
+        this.userStoreHandler = storeHandler;
     }
 
     public async Store(req: Request, res: Response) {

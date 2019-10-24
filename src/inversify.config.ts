@@ -8,7 +8,6 @@ import CurrentUserService from "./Infraestructure/Services/CurrentUserService";
 import UserController from "./Infraestructure/Controllers/UserController";
 import PostController from "./Infraestructure/Controllers/PostController";
 import CurrentRequestMiddleware from "./Infraestructure/Middlewares/CurrentRequestMiddleware";
-
 import PostsShowAdapter from "./Infraestructure/Adapters/PostsShowAdapter";
 import PostShowAdapter from "./Infraestructure/Adapters/PostShowAdapter";
 import AllPostsShowHandler from "./Domain/Handlers/AllPostsShowHandler";
