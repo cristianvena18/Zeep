@@ -1,7 +1,10 @@
 import container from './inversify.config';
+import 'reflect-metadata';
+
 import express, {Express} from 'express';
 import Router from './Infraestructure/Router/Routs';
 import * as dotenv from 'dotenv';
+
 import { createConnectionDB } from './Infraestructure/DataBase/Configs';
 import LoginController from './Infraestructure/Controllers/LoginController';
 import { AuthenticateMiddleware } from './Infraestructure/Middlewares/AuthenticateMiddleware';

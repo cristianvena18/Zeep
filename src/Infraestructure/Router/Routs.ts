@@ -1,4 +1,4 @@
-import {Request, Response, Express} from 'express';
+import {Request, Response, Express, NextFunction} from 'express';
 
 import UserController from '../Controllers/UserController';
 import LoginController from '../Controllers/LoginController';
@@ -7,7 +7,6 @@ import PostController from '../Controllers/PostController';
 import bodyParser = require('body-parser');
 import { inject } from 'inversify';
 import { AuthenticateMiddleware } from '../Middlewares/AuthenticateMiddleware';
-import { NextFunction } from 'connect';
 import { ErrorHandler } from '../utils/ErrorHandler';
 import container from '../../inversify.config';
 import RequireJsonContent from '../Middlewares/CurrentRequestMiddleware';

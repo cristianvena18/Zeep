@@ -1,4 +1,5 @@
 import { Container } from "inversify";
+import 'reflect-metadata';
 import TYPES from "./types";
 import LoginController from "./Infraestructure/Controllers/LoginController";
 import IHashService from "./Infraestructure/Services/IHashService";
@@ -18,6 +19,11 @@ import UserShowAdapter from "./Infraestructure/Adapters/UserShowAdapter";
 import UserStoreAdapter from "./Infraestructure/Adapters/UserStoreAdapter";
 import UserShowHandler from "./Domain/Handlers/UserShowHandler";
 import UserStoreHandler from "./Domain/Handlers/UserStoreHandler";
+import LoginAdapter from "./Infraestructure/Adapters/LoginAdapter";
+import LogOutAdapter from "./Infraestructure/Adapters/LogOutAdapter";
+import LoginHandler from "./Domain/Handlers/LoginHandler";
+import LogOutHandler from "./Domain/Handlers/LogOutHandler";
+import { ErrorHandler } from "./Infraestructure/utils/ErrorHandler";
 
 var container = new Container();
 
@@ -32,6 +38,8 @@ container.bind<PostShowAdapter>(PostShowAdapter).toSelf();
 container.bind<PostStoreAdapter>(PostStoreAdapter).toSelf();
 container.bind<UserShowAdapter>(UserShowAdapter).toSelf();
 container.bind<UserStoreAdapter>(UserStoreAdapter).toSelf();
+container.bind<LoginAdapter>(LoginAdapter).toSelf();
+container.bind<LogOutAdapter>(LogOutAdapter).toSelf();
 
 // Handlers
 container.bind<PostStoreHandler>(PostStoreHandler).toSelf();
@@ -39,6 +47,9 @@ container.bind<PostShowHandler>(PostShowHandler).toSelf();
 container.bind<AllPostsShowHandler>(AllPostsShowHandler).toSelf();
 container.bind<UserShowHandler>(UserShowHandler).toSelf();
 container.bind<UserStoreHandler>(UserStoreHandler).toSelf();
+container.bind<LoginHandler>(LoginHandler).toSelf();
+container.bind<LogOutHandler>(LogOutHandler).toSelf();
+container.bind<ErrorHandler>(ErrorHandler).toSelf();
 
 // Services
 container.bind<IHashService>(TYPES.IHashService).to(HashService);

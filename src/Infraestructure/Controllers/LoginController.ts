@@ -1,72 +1,45 @@
-import User from '../../Domain/Entity/User';
 import { Request, Response } from 'express';
-import Session from '../../Domain/Entity/Sessions';
-import { DeleteResult } from 'typeorm';
-import { inject, injectable } from 'inversify';
-import IHashService from '../Services/IHashService';
-import TYPES from '../../types';
-
+import LoginAdapter from '../Adapters/LoginAdapter';
+import LoginHandler from '../../Domain/Handlers/LoginHandler';
+import LogOutAdapter from '../Adapters/LogOutAdapter';
+import LogOutHandler from '../../Domain/Handlers/LogOutHandler';
+import { injectable, inject } from 'inversify';
 
 @injectable()
 class LoginController {
 
-    private hashService: IHashService;
+    private loginAdapter: LoginAdapter;
+    private loginHandler: LoginHandler;
+    private logoutAdapter: LogOutAdapter;
+    private logoutHandler: LogOutHandler;
 
-    public constructor(@inject(TYPES.IHashService) hashService: IHashService) {
-        this.hashService = hashService;
-    }
+    public constructor(
+        @inject(LoginAdapter) loginAdapter: LoginAdapter,
+        @inject(LoginHandler) loginHandler: LoginHandler,
+        @inject(LogOutAdapter) logoutAdapter: LogOutAdapter,
+        @inject(LogOutHandler) logoutHandler: LogOutHandler
+        ){
+            this.loginAdapter = loginAdapter;
+            this.loginHandler = loginHandler;
+            this.logoutAdapter = logoutAdapter;
+            this.logoutHandler = logoutHandler;
+        }
 
     public async LogIn(req: Request, res: Response) {
+        const command = await this.loginAdapter.adapt(req);
 
-        const { username, password } = req.body;
+        const response = await this.loginHandler.execute(command);
 
-        if (!username || !password) {
-            res.status(400).json({ message: "not username and/or password found" });
-        }
-
-        const user: User | undefined = await User.findOne({ username: username });
-
-        if (user) {
-
-            const hashPassword = this.hashService.Encrypt(password);
-            const valid: boolean = this.hashService.Equals(user.password, hashPassword);
-
-            if (valid) {
-                const token = this.hashService.GeneratedToken();
-                const session = new Session(user.id, token);
-                await session.save();
-                res.status(200).json({ name: user.username, username: user.username, token: token });
-            }
-            else {
-                res.status(400).json({ message: 'not valid password!' });
-            }
-        }
-        else {
-            res.status(404).json({ message: 'the user not found' });
-        }
+        res.status(200).json(response);
     }
 
     public async LogOut(req: Request, res: Response) {
-        try {
-            const user: User | undefined = await User.findOne({ id: req.body.iduser });
 
-            if (!user) {
-                res.status(404).json({ message: 'not user found' });
-            }
-            else {
-                const a: DeleteResult = await Session.delete({ IdUser: user.id });
+        const command = this.logoutAdapter.adapt(req);
 
-                if (a.affected === 1) {
-                    res.status(200).json({ message: 'successful logout!' });
-                }
-                else {
-                    res.status(500).json({ message: 'problems with user logout' });
-                }
-            }
-        } catch (error) {
-            res.status(500).json({ message: error });
-        }
+        const response = this.logoutHandler.execute(command);
 
+        res.status(200).json(response);
     }
 }
 
