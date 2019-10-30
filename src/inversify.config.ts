@@ -24,6 +24,10 @@ import LogOutAdapter from "./Infraestructure/Adapters/LogOutAdapter";
 import LoginHandler from "./Domain/Handlers/LoginHandler";
 import LogOutHandler from "./Domain/Handlers/LogOutHandler";
 import { ErrorHandler } from "./Infraestructure/utils/ErrorHandler";
+import PostUpdateAdapter from "./Infraestructure/Adapters/PostUpdateAdapter";
+import PostUpdateHandler from "./Domain/Handlers/PostUpdateHandler";
+import CommentInCommentHandler from "./Domain/Handlers/CommentInCommentHandler";
+import CommentInCommentAdapter from "./Infraestructure/Adapters/CommentInCommentAdapter";
 
 var container = new Container();
 
@@ -40,6 +44,8 @@ container.bind<UserShowAdapter>(UserShowAdapter).toSelf();
 container.bind<UserStoreAdapter>(UserStoreAdapter).toSelf();
 container.bind<LoginAdapter>(LoginAdapter).toSelf();
 container.bind<LogOutAdapter>(LogOutAdapter).toSelf();
+container.bind<PostUpdateAdapter>(PostUpdateAdapter).toSelf();
+container.bind<CommentInCommentAdapter>(CommentInCommentAdapter).toSelf();
 
 // Handlers
 container.bind<PostStoreHandler>(PostStoreHandler).toSelf();
@@ -50,6 +56,8 @@ container.bind<UserStoreHandler>(UserStoreHandler).toSelf();
 container.bind<LoginHandler>(LoginHandler).toSelf();
 container.bind<LogOutHandler>(LogOutHandler).toSelf();
 container.bind<ErrorHandler>(ErrorHandler).toSelf();
+container.bind<PostUpdateHandler>(PostUpdateHandler).toSelf();
+container.bind<CommentInCommentHandler>(CommentInCommentHandler).toSelf();
 
 // Services
 container.bind<IHashService>(TYPES.IHashService).to(HashService);

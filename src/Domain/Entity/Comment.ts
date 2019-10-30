@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, Column, ManyToOne, OneToMany, PrimaryGeneratedColumn, JoinColumn, JoinTable } from "typeorm";
+import { BaseEntity, Entity, Column, ManyToOne, PrimaryGeneratedColumn, JoinTable, TreeChildren, TreeParent } from "typeorm";
 import User from "./User";
 import Post from "./Post";
 
@@ -13,10 +13,24 @@ class Comment extends BaseEntity{
     public post: Post;
 
     @ManyToOne(type => User)
-    public IdUser: number;
+    public user: User;
 
     @Column()
     public content: string;
+
+    @TreeChildren()
+    public comment: Comment[];
+
+    @TreeParent()
+    public parent: Comment;
+
+    public addComment(comment: Comment){
+        if(!this.comment){
+            this.comment = [];
+        }
+
+        this.comment.push(comment);
+    }
 }
 
 export default Comment;

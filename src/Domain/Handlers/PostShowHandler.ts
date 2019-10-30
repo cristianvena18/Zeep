@@ -2,9 +2,7 @@ import Post from "../Entity/Post";
 import ShowPostCommand from '../../Infraestructure/Commands/ShowPostCommand';
 import User from "../Entity/User";
 import { Roles } from "../Enums/Roles";
-import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
 import { injectable } from "inversify";
-import Comment from "../Entity/Comment";
 import { EntityNotFound } from "../../Infraestructure/utils/errors/EntityNotFound";
 import { DataBaseError } from "../../Infraestructure/utils/errors/DataBaseError";
 
@@ -32,7 +30,7 @@ class PostShowHandler {
 
             if (user.hasRole(Roles.ZEEPER)) {
                 //where: { Id: command.GetIdPost() }
-                post = await Post.findOne(command.GetIdPost(), { relations: ['comment'] });
+                post = await Post.findOne(command.GetIdPost(), { relations: ['comment', 'comment.user', 'comment.comment', 'comment.comment.user', 'comment.comment.comment', 'comment.comment.comment.user', 'comment.comment.comment.comment', 'comment.comment.comment.comment.user'] });
             } else {
                 post = await Post.findOne({ where: { Id: command.GetIdPost() } });
             }

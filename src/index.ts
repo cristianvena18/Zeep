@@ -22,7 +22,7 @@ class app{
         this.express = express();
         createConnectionDB();
         this.router = new Router(
-            this.express, 
+            this.express,
             container.get(LoginController), 
             container.get(AuthenticateMiddleware),
             container.get(CurrentRequestMiddleware),

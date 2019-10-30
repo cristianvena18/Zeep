@@ -17,6 +17,8 @@ import { InfraestructureError } from '../utils/errors/InfraestructureError';
 import { ApplicationError } from '../utils/errors/AppError';
 import PostUpdateAdapter from '../Adapters/PostUpdateAdapter';
 import PostUpdateHandler from '../../Domain/Handlers/PostUpdateHandler';
+import CommentInCommentAdapter from '../Adapters/CommentInCommentAdapter';
+import CommentInComment from '../../Domain/Handlers/CommentInCommentHandler';
 
 @injectable()
 class PostController {
@@ -29,6 +31,8 @@ class PostController {
     private postStoreHandler: PostStoreHandler;
     private postUpdateAdapter: PostUpdateAdapter;
     private postUpdateHandler: PostUpdateHandler;
+    private commentInCommentHandler: CommentInComment;
+    private commentInCommentAdapter: CommentInCommentAdapter;
 
     constructor(
         @inject(PostsShowAdapter) postsShowAdapter: PostsShowAdapter,
@@ -38,7 +42,9 @@ class PostController {
         @inject(PostStoreAdapter) postStoreAdapter: PostStoreAdapter,
         @inject(PostStoreHandler) postStoreHandler: PostStoreHandler,
         @inject(PostUpdateAdapter) postUpdateAdapter: PostUpdateAdapter,
-        @inject(PostUpdateHandler) postUpdateHandler: PostUpdateHandler
+        @inject(PostUpdateHandler) postUpdateHandler: PostUpdateHandler,
+        @inject(CommentInCommentAdapter) commentInCommentAdapter: CommentInCommentAdapter,
+        @inject(CommentInComment) commentInCommentHandler: CommentInComment
     ) {
         this.postsShowAdapter = postsShowAdapter;
         this.postsShowHandler = postsShowHandler;
@@ -48,6 +54,8 @@ class PostController {
         this.postStoreHandler = postStoreHandler;
         this.postUpdateAdapter = postUpdateAdapter;
         this.postUpdateHandler = postUpdateHandler;
+        this.commentInCommentAdapter = commentInCommentAdapter;
+        this.commentInCommentHandler = commentInCommentHandler;
     }
 
     public Show = async (req: Request, res: Response) => {
@@ -117,7 +125,24 @@ class PostController {
     public Update = async (req: Request, res: Response) => {
         try {
             const commandAdapter = this.postUpdateAdapter.adapt(req);
-            const respose = this.postUpdateHandler.execute(commandAdapter);
+            const respose = await this.postUpdateHandler.execute(commandAdapter);
+
+            res.status(200).json(respose);
+        } catch (error) {
+            if (error instanceof InfraestructureError) {
+                res.status(error.getStatusCode()).json({ message: error.message });
+            }else if(error instanceof ApplicationError){
+                res.status(500).json({ message: error.getDescription() });
+            }else{
+                res.status(500).json({ message: 'error unexpected' });
+            }
+        }
+    }
+
+    public Comment = async (req: Request, res: Response) => {
+        try {
+            const command = this.commentInCommentAdapter.adapt(req);
+            const respose = await this.commentInCommentHandler.execute(command);
 
             res.status(200).json(respose);
         } catch (error) {

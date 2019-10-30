@@ -12,7 +12,7 @@ class AllPostsShowHandler {
     public async execute(command: ShowPostCommand): Promise<Post[]> {
         try {
             const userId = command.GetUser();
-            if(userId === -1){
+            if (userId === -1) {
                 return Post.find({ where: { limit: 10 } });
             }
 
@@ -23,7 +23,7 @@ class AllPostsShowHandler {
             }
 
             if (user.hasRole(Roles.ZEEPER)) {
-                return Post.find({ where: { limit: 10 }, relations: ['comment'] });
+                return Post.find({ where: { limit: 10 }, relations: ['comment', 'comment.user', 'comment.comment', 'comment.comment.user'] });
             } else {
                 return Post.find({ where: { limit: 10 } });
             }

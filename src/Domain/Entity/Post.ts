@@ -20,21 +20,9 @@ class Post extends BaseEntity {
     @JoinTable()
     public comment: Comment[];
 
-    public GetObjectWithOutComments(): Object {
-        const post = {
-            title: this.title,
-            content: this.body
-        };
-
-        return post;
-    }
-
-    public GetObjectWithComments(): Object {
-        const post = {
-            title: this.title,
-            content: this.body
-        }
-        return post;
+    public FindComment(id: number){
+        const result = this.comment.find(element => element.id === id);
+        return result;
     }
 
     public addComment(comment: Comment){

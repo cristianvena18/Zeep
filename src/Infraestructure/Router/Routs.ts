@@ -62,6 +62,7 @@ class Routs {
         this.express.use(this.authMiddleware.redirectIfNotAuthenticate);
 
         this.express.post('/post/:id', this.postController.Update);
+        this.express.post('/comment/:id', this.postController.Comment);
         this.express.get('/user/:id', this.userController.Show);
         this.express.post('/user/:id', this.userController.Update);
         this.express.post('/post', this.postController.Store);

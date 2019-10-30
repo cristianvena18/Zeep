@@ -4,12 +4,22 @@ import Comment from "../Entity/Comment";
 import { EntityNotFound } from "../../Infraestructure/utils/errors/EntityNotFound";
 import { DataBaseError } from "../../Infraestructure/utils/errors/DataBaseError";
 import { injectable } from "inversify";
+import User from "../Entity/User";
+import { Roles } from "../Enums/Roles";
+import UnAuthorizedException from "../../Infraestructure/utils/errors/UnAuthorizedException";
 
 @injectable()
 class PostUpdateHandler {
     public execute = async (command: UpdatePostCommand) => {
         try {
-            const post = await Post.findOne({ id: command.GetIdPost() });
+
+            const user = await User.findOne(command.GetIdUser(), {relations: ['roles']});
+
+            if(!user.hasRole(Roles.ZEEPER)){
+                throw new UnAuthorizedException('is not zeeper');
+            }
+
+            const post = await Post.findOne(command.GetIdPost(), { relations: ['comment', 'comment.comment'] });
 
             if (!post) {
                 throw new EntityNotFound('not post found');
@@ -17,7 +27,7 @@ class PostUpdateHandler {
 
             const comment = new Comment();
             comment.post = post;
-            comment.IdUser = command.GetIdUser();
+            comment.user = user;
             comment.content = command.GetContent();
             await comment.save();
 
