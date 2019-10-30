@@ -1,8 +1,8 @@
 import Post from "../Entity/Post";
 import CreatePostCommand from '../../Infraestructure/Commands/CreatePostCommand';
-import { DataBaseError } from "../../Infraestructure/Exception/DataBaseError";
+import { DataBaseError } from "../../Infraestructure/utils/errors/DataBaseError";
 import User from "../Entity/User";
-import { EntityNotFound } from "../../Infraestructure/Exception/EntityNotFound";
+import { EntityNotFound } from "../../Infraestructure/utils/errors/EntityNotFound";
 import { injectable } from "inversify";
 
 @injectable()

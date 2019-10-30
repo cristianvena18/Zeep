@@ -1,10 +1,9 @@
 import { Request } from 'express';
 import schemaAuthorization from './Schemas/AuthorizationSchemas';
-import schemaId from './Schemas/IdFindSchema';
 import ShowPostCommand from '../Commands/ShowPostsCommand';
 import { inject, injectable } from 'inversify';
 import CurrentUserService from '../Services/CurrentUserService';
-import { InfraestructureError } from '../utils/errors/InfraestructureError';
+import { InvalidData } from '../utils/errors/InvalidData';
 
 @injectable()
 class PostsShowAdapter {
@@ -25,7 +24,7 @@ class PostsShowAdapter {
         const resultAuthorization = schemaAuthorization.validate({authorization});
 
         if (resultAuthorization.error) {
-            throw new InfraestructureError('error of authorization', 400);
+            throw new InvalidData('error of authorization');
         }
 
         const user = await this.currentUserService.getUserId(authorization);

@@ -2,9 +2,9 @@ import ShowPostCommand from "../../Infraestructure/Commands/ShowPostsCommand";
 import Post from "../Entity/Post";
 import User from "../Entity/User";
 import { Roles } from "../Enums/Roles";
-import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
 import { injectable } from "inversify";
-import { InfraestructureError } from "../../Infraestructure/utils/errors/InfraestructureError";
+import { EntityNotFound } from "../../Infraestructure/utils/errors/EntityNotFound";
+import { DataBaseError } from "../../Infraestructure/utils/errors/DataBaseError";
 
 @injectable()
 class AllPostsShowHandler {
@@ -19,7 +19,7 @@ class AllPostsShowHandler {
             const user: User = await User.findOne({ where: { id: userId }, relations: ['roles'] });
 
             if (!user) {
-                throw new InfraestructureError('not user found', 404);
+                throw new EntityNotFound('not user found');
             }
 
             if (user.hasRole(Roles.ZEEPER)) {
@@ -28,7 +28,7 @@ class AllPostsShowHandler {
                 return Post.find({ where: { limit: 10 } });
             }
         } catch (error) {
-            throw new ApplicationError('error db', error);
+            throw new DataBaseError('error db');
         }
     }
 }

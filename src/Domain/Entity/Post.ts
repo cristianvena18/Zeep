@@ -36,6 +36,14 @@ class Post extends BaseEntity {
         }
         return post;
     }
+
+    public addComment(comment: Comment){
+        if(!this.comment){
+            this.comment = [];
+        }
+
+        this.comment.push(comment);
+    }
 }
 
 export default Post;

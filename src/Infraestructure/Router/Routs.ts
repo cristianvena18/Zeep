@@ -61,9 +61,7 @@ class Routs {
 
         this.express.use(this.authMiddleware.redirectIfNotAuthenticate);
 
-        this.express.post('/post/:id', (req: Request, res: Response) => {
-            res.status(500).json({ message: 'not implemented function' });
-        });
+        this.express.post('/post/:id', this.postController.Update);
         this.express.get('/user/:id', this.userController.Show);
         this.express.post('/user/:id', this.userController.Update);
         this.express.post('/post', this.postController.Store);

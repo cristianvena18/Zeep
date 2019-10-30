@@ -5,7 +5,7 @@ import HashService from '../Services/HashService';
 import { inject, injectable } from 'inversify';
 import IHashService from '../Services/IHashService';
 import TYPES from '../../types';
-import { InfraestructureError } from '../utils/errors/InfraestructureError';
+import { InvalidData } from '../utils/errors/InvalidData';
 
 @injectable()
 class UserStoreAdapter{
@@ -20,7 +20,7 @@ class UserStoreAdapter{
         const result = schema.validate(req.body);
 
         if(result.error){
-            throw new InfraestructureError(result.error.message, 400);
+            throw new InvalidData(result.error.message);
         }
 
         const {username, password} = result.value;

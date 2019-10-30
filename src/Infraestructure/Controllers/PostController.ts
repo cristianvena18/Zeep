@@ -5,16 +5,18 @@ import PostShowAdapter from "../Adapters/PostShowAdapter";
 import PostsShowAdapter from '../Adapters/PostsShowAdapter';
 import AllPostsShowHandler from '../../Domain/Handlers/AllPostsShowHandler';
 import PostShowHandler from '../../Domain/Handlers/PostShowHandler';
-import UnAuthorizedException from '../../Domain/Exceptions/UnAuthorizedException';
-import { SessionInvalid } from '../Exception/SessionInvalid';
-import { EntityNotFound } from '../Exception/EntityNotFound';
-import { SessionNotFound } from '../Exception/SessionNotFound';
-import { DataBaseError } from '../Exception/DataBaseError';
-import { InvalidData } from '../Exception/InvalidData';
+import UnAuthorizedException from '../utils/errors/UnAuthorizedException';
+import { SessionInvalid } from '../utils/errors/SessionInvalid';
+import { EntityNotFound } from '../utils/errors/EntityNotFound';
+import { SessionNotFound } from '../utils/errors/SessionNotFound';
+import { DataBaseError } from '../utils/errors/DataBaseError';
+import { InvalidData } from '../utils/errors/InvalidData';
 import { injectable, inject } from 'inversify';
 import CreatePostCommand from '../Commands/CreatePostCommand';
 import { InfraestructureError } from '../utils/errors/InfraestructureError';
 import { ApplicationError } from '../utils/errors/AppError';
+import PostUpdateAdapter from '../Adapters/PostUpdateAdapter';
+import PostUpdateHandler from '../../Domain/Handlers/PostUpdateHandler';
 
 @injectable()
 class PostController {
@@ -25,6 +27,8 @@ class PostController {
     private postShowHandler: PostShowHandler;
     private postStoreAdapter: PostStoreAdapter;
     private postStoreHandler: PostStoreHandler;
+    private postUpdateAdapter: PostUpdateAdapter;
+    private postUpdateHandler: PostUpdateHandler;
 
     constructor(
         @inject(PostsShowAdapter) postsShowAdapter: PostsShowAdapter,
@@ -32,7 +36,9 @@ class PostController {
         @inject(PostShowAdapter) postShowAdapter: PostShowAdapter,
         @inject(PostShowHandler) postShowHandler: PostShowHandler,
         @inject(PostStoreAdapter) postStoreAdapter: PostStoreAdapter,
-        @inject(PostStoreHandler) postStoreHandler: PostStoreHandler
+        @inject(PostStoreHandler) postStoreHandler: PostStoreHandler,
+        @inject(PostUpdateAdapter) postUpdateAdapter: PostUpdateAdapter,
+        @inject(PostUpdateHandler) postUpdateHandler: PostUpdateHandler
     ) {
         this.postsShowAdapter = postsShowAdapter;
         this.postsShowHandler = postsShowHandler;
@@ -40,6 +46,8 @@ class PostController {
         this.postShowHandler = postShowHandler;
         this.postStoreAdapter = postStoreAdapter;
         this.postStoreHandler = postStoreHandler;
+        this.postUpdateAdapter = postUpdateAdapter;
+        this.postUpdateHandler = postUpdateHandler;
     }
 
     public Show = async (req: Request, res: Response) => {
@@ -51,16 +59,15 @@ class PostController {
 
             res.status(200).json({ message: 'ok', posts });
         } catch (error) {
-            if(error instanceof InfraestructureError){
+            if (error instanceof InfraestructureError) {
                 res.status(error.getStatusCode()).json(error.message);
             }
-            else if(error instanceof ApplicationError){
-                res.status(500).json({message: error.getDescription()});
-            }else{
-                res.status(500).json({message: 'error unexpected'});
+            else if (error instanceof ApplicationError) {
+                res.status(500).json({ message: error.getDescription() });
+            } else {
+                res.status(500).json({ message: 'error unexpected' });
             }
         }
-        
     }
 
     public ShowId = async (req: Request, res: Response) => {
@@ -70,13 +77,13 @@ class PostController {
 
             res.status(200).json({ message: 'ok', posts: [post] });
         } catch (error) {
-            if(error instanceof InfraestructureError){
+            if (error instanceof InfraestructureError) {
                 res.status(error.getStatusCode()).json(error.message);
             }
-            else if(error instanceof ApplicationError){
-                res.status(500).json({message: error.getDescription()});
-            }else{
-                res.status(500).json({message: 'error unexpected'});
+            else if (error instanceof ApplicationError) {
+                res.status(500).json({ message: error.getDescription() });
+            } else {
+                res.status(500).json({ message: 'error unexpected' });
             }
         }
     }
@@ -103,6 +110,23 @@ class PostController {
                 res.status(500).json({ message: error.message });
             } else {
                 res.status(500).json({ message: error.message });
+            }
+        }
+    }
+
+    public Update = async (req: Request, res: Response) => {
+        try {
+            const commandAdapter = this.postUpdateAdapter.adapt(req);
+            const respose = this.postUpdateHandler.execute(commandAdapter);
+
+            res.status(200).json(respose);
+        } catch (error) {
+            if (error instanceof InfraestructureError) {
+                res.status(error.getStatusCode()).json({ message: error.message });
+            }else if(error instanceof ApplicationError){
+                res.status(500).json({ message: error.getDescription() });
+            }else{
+                res.status(500).json({ message: 'error unexpected' });
             }
         }
     }

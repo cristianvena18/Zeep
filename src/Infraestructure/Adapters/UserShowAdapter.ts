@@ -1,8 +1,8 @@
 import { Request } from 'express';
 import schemaId from './Schemas/IdFindSchema';
 import ShowUserCommand from '../Commands/ShowUserCommand';
-import { InfraestructureError } from '../utils/errors/InfraestructureError';
 import { injectable } from 'inversify';
+import { InvalidData } from '../utils/errors/InvalidData';
 
 @injectable()
 class UserShowAdapter {
@@ -13,7 +13,7 @@ class UserShowAdapter {
         const resultId = schemaId.validate({ id });
 
         if (resultId.error) {
-            throw new InfraestructureError(resultId.error.message, 400);
+            throw new InvalidData(resultId.error.message);
         }
 
         return new ShowUserCommand(resultId.value);

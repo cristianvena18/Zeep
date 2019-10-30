@@ -1,10 +1,8 @@
-import { InfraestructureError } from "../../Infraestructure/utils/errors/InfraestructureError";
-import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
 import { DeleteResult } from "typeorm";
 import Session from "../Entity/Session";
-import User from "../Entity/User";
 import LogOutCommand from "../../Infraestructure/Commands/LogOutCommand";
 import { injectable } from "inversify";
+import { DataBaseError } from "../../Infraestructure/utils/errors/DataBaseError";
 
 @injectable()
 class LogOutHandler {
@@ -21,10 +19,10 @@ class LogOutHandler {
                 return { message: 'successful logout!' };
             }
             else {
-                throw new ApplicationError('error', 'problems with user logout');
+                throw new DataBaseError('problems with user logout');
             }
         } catch (error) {
-            throw new InfraestructureError(error, 500);
+            throw new DataBaseError(error);
         }
     }
 }

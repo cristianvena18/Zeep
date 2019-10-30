@@ -1,9 +1,9 @@
 import User from "../Entity/User";
 import CreateUserCommand from "../../Infraestructure/Commands/CreateUserCommands";
-import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
 import { injectable, inject } from "inversify";
 import Role from "../Entity/Role";
 import { Roles } from "../Enums/Roles";
+import { DataBaseError } from "../../Infraestructure/utils/errors/DataBaseError";
 
 @injectable()
 class UserStoreHandler {
@@ -16,7 +16,7 @@ class UserStoreHandler {
         user.username = command.GetUserName();
         user.isBlocked = false;
 
-        const roleBasic = await Role.findOne({where: {Name: Roles.ZEEPER}});
+        const roleBasic = await Role.findOne({ where: { Name: Roles.ZEEPER } });
 
         user.addRole(roleBasic);
 
@@ -24,7 +24,7 @@ class UserStoreHandler {
             await user.save();
             return "user successfully created";
         } catch (error) {
-            throw new ApplicationError('error db', error);
+            throw new DataBaseError(error);
         }
     }
 }

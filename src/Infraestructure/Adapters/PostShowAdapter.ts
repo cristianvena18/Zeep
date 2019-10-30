@@ -3,8 +3,8 @@ import schemaAuthorization from './Schemas/AuthorizationSchemas';
 import schemaId from './Schemas/IdFindSchema';
 import ShowPostCommand from '../Commands/ShowPostCommand';
 import CurrentUserService from "../Services/CurrentUserService";
-import { InfraestructureError } from "../utils/errors/InfraestructureError";
 import { injectable, inject } from "inversify";
+import { InvalidData } from "../utils/errors/InvalidData";
 
 
 @injectable()
@@ -23,7 +23,7 @@ export class PostShowAdapter {
             const resultAuthorization = schemaAuthorization.validate({ authorization });
 
             if (resultAuthorization.error) {
-                throw new InfraestructureError(resultAuthorization.error.message, 400);
+                throw new InvalidData(resultAuthorization.error.message);
             }
 
             validAuth = await this.currentUserService.getUserId(authorization);
@@ -34,7 +34,7 @@ export class PostShowAdapter {
         const resultIdPost = schemaId.validate({ id });
 
         if (resultIdPost.error) {
-            throw new InfraestructureError(resultIdPost.error.message, 400);
+            throw new InvalidData(resultIdPost.error.message);
         }
 
         return new ShowPostCommand(validAuth, resultIdPost.value);

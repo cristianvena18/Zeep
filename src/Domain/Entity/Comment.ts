@@ -17,13 +17,6 @@ class Comment extends BaseEntity{
 
     @Column()
     public content: string;
-
-    public constructor(idPost: Post, idUser: number, content: string){
-        super();
-        this.post = idPost;
-        this.IdUser = idUser;
-        this.content = content;
-    }
 }
 
 export default Comment;

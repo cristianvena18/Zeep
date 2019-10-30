@@ -5,6 +5,8 @@ import { Roles } from "../Enums/Roles";
 import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
 import { injectable } from "inversify";
 import Comment from "../Entity/Comment";
+import { EntityNotFound } from "../../Infraestructure/utils/errors/EntityNotFound";
+import { DataBaseError } from "../../Infraestructure/utils/errors/DataBaseError";
 
 @injectable()
 class PostShowHandler {
@@ -18,14 +20,19 @@ class PostShowHandler {
             console.log(userId);
             if (userId === -1) {
                 post = await Post.findOne({ where: { Id: command.GetIdPost() } });
-                return post;
+                if (post) {
+                    return post;
+                } else {
+                    throw new EntityNotFound('a post with that id was not found');
+                }
+
             }
 
             const user = await User.findOneOrFail({ where: { id: userId }, relations: ['roles'] });
 
             if (user.hasRole(Roles.ZEEPER)) {
                 //where: { Id: command.GetIdPost() }
-                post = await Post.findOne(command.GetIdPost(),{ relations: ['comment'] });
+                post = await Post.findOne(command.GetIdPost(), { relations: ['comment'] });
             } else {
                 post = await Post.findOne({ where: { Id: command.GetIdPost() } });
             }
@@ -34,9 +41,9 @@ class PostShowHandler {
                 return post;
             }
 
-            throw new ApplicationError('not data found', 'a post with that id was not found');
+            throw new EntityNotFound('a post with that id was not found');
         } catch (error) {
-            throw new ApplicationError('error db', error);
+            throw new DataBaseError(error);
         }
     }
 }

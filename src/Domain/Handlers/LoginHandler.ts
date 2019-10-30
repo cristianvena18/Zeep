@@ -3,8 +3,9 @@ import { inject, injectable } from "inversify";
 import TYPES from "../../types";
 import IHashService from "../../Infraestructure/Services/IHashService";
 import Session from "../Entity/Session";
-import { InfraestructureError } from "../../Infraestructure/utils/errors/InfraestructureError";
 import LoginCommand from "../../Infraestructure/Commands/LoginCommand";
+import { SessionInvalid } from "../../Infraestructure/utils/errors/SessionInvalid";
+import { EntityNotFound } from "../../Infraestructure/utils/errors/EntityNotFound";
 
 @injectable()
 class LoginHandler{
@@ -30,11 +31,11 @@ class LoginHandler{
                 return { username: user.username, token: token };
             }
             else {
-                throw new InfraestructureError('not valid password!', 401);
+                throw new SessionInvalid('not valid password!');
             }
         }
         else {
-            throw new InfraestructureError('the user not found', 404);
+            throw new EntityNotFound('the user not found');
         }
     }
 }

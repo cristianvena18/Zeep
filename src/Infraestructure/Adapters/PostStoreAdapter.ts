@@ -2,7 +2,7 @@ import { Request } from 'express';
 import schemaTitleAndContent from './Schemas/TitleAndContentSchema';
 import CreatePostCommand from '../Commands/CreatePostCommand';
 import { injectable } from 'inversify';
-import { InfraestructureError } from '../utils/errors/InfraestructureError';
+import { InvalidData } from '../utils/errors/InvalidData';
 
 @injectable()
 class PostStoreAdapter {
@@ -15,7 +15,7 @@ class PostStoreAdapter {
         const resultTitle = schemaTitleAndContent.validate(object);
 
         if (resultTitle.error) {
-            throw new InfraestructureError(resultTitle.error.message, 400);
+            throw new InvalidData(resultTitle.error.message);
         }
 
         return new CreatePostCommand(currentUserId, title, content);

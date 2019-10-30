@@ -4,6 +4,8 @@ import IHashService from "./IHashService";
 import { inject, injectable } from "inversify";
 import TYPES from "../../types";
 import { InfraestructureError } from "../utils/errors/InfraestructureError";
+import { SessionNotFound } from "../utils/errors/SessionNotFound";
+import { EntityNotFound } from "../utils/errors/EntityNotFound";
 
 @injectable()
 class CurrentUserService {
@@ -17,19 +19,19 @@ class CurrentUserService {
     public getUserId = async (token: string): Promise<number> => {
         const session: Session | undefined = await Session.findOne({ Token: token });
         if (!session) {
-            throw new InfraestructureError('Forbidden', 401);
+            throw new SessionNotFound('Forbidden');
         }
 
         const result: number = await User.count({ where: { id: session.IdUser, isBlocked: false } });
         if (result != 1) {
-            throw new InfraestructureError('User not found', 404);
+            throw new EntityNotFound('User not found');
         }
 
         if (this.hashService.Equals(token, session.Token)) {
             return session.IdUser;
         }
 
-        throw new InfraestructureError('Forbidden', 401);
+        throw new SessionNotFound('Forbidden');
     }
 }
 

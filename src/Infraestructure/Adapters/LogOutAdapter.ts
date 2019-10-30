@@ -1,8 +1,8 @@
 import { Request } from "express";
 import schema from "./Schemas/AuthorizationSchemas";
-import { InfraestructureError } from "../utils/errors/InfraestructureError";
 import LogOutCommand from "../Commands/LogOutCommand";
 import { injectable } from "inversify";
+import { InvalidData } from "../utils/errors/InvalidData";
 
 @injectable()
 class LogOutAdapter{
@@ -16,7 +16,7 @@ class LogOutAdapter{
         const result = schema.validate({authorization});
 
         if(result.error){
-            throw new InfraestructureError(result.error.message, 400);
+            throw new InvalidData(result.error.message);
         }
 
         return new LogOutCommand(authorization);
