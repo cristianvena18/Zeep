@@ -14,31 +14,23 @@ class UserShowHandler {
     }
 
     public async execute(command: ShowUserCommand) {
-        const id: number = command.GetId();
-
         try {
-            const userSearched = await User.findOne(id);
+            const userSearched: User = await User.findOne({ where: { id: command.GetId(), isBlocked: false } });
 
             if (userSearched) {
-                //no funciona
-                // if (_user.hasRole('admin')) {
-                //     return userSearched;
-                // }
-
                 if (userSearched.isBlocked) {
                     throw new InfraestructureError('user blocked!', 401);
                 }
-
-                return userSearched;
-            }
-            else {
+            } else {
                 throw new InfraestructureError('not user found with id!', 404);
             }
-        } catch (error) {
+
+            return userSearched;
+        }
+        catch (error) {
             throw new ApplicationError('error db', error);
         }
     }
-
 }
 
 export default UserShowHandler;

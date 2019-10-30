@@ -1,6 +1,9 @@
 import {NextFunction, Request, Response} from "express";
 import CurrentUserService from "../Services/CurrentUserService";
 import {inject, injectable} from "inversify";
+import { InfraestructureError } from "../utils/errors/InfraestructureError";
+import Role from "../../Domain/Entity/Role";
+import { Roles } from "../../Domain/Enums/Roles";
 
 @injectable()
 export class AuthenticateMiddleware {
@@ -12,16 +15,23 @@ export class AuthenticateMiddleware {
     }
 
 
-    public redirectIfNotAuthenticate = (req: Request, res: Response, next: NextFunction) => {
+    public redirectIfNotAuthenticate = async (req: Request, res: Response, next: NextFunction) => {
         const {authorization} = req.headers;
 
-        const userId = this.currentUserService.getUserId(authorization);
+        try {
+            const userId = await this.currentUserService.getUserId(authorization);
 
-        if(!userId){
-            res.status(401).json({error: 'Unauthorized'});
+            if(userId === undefined){
+                res.status(401).json({error: 'Unauthorized'});
+            }else{
+               // console.log(userId);
+                req.body.currentUserId = userId;
+            }
+            next();
+        } catch (error) {
+            if(error instanceof InfraestructureError){
+                res.status(error.getStatusCode()).json(error.message);
+            }
         }
-        //@ts-ignore
-        req.currentUserId = userId;
-        next();
     }
 }

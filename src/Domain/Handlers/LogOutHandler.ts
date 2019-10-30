@@ -1,33 +1,27 @@
 import { InfraestructureError } from "../../Infraestructure/utils/errors/InfraestructureError";
 import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
 import { DeleteResult } from "typeorm";
-import Session from "../Entity/Sessions";
+import Session from "../Entity/Session";
 import User from "../Entity/User";
 import LogOutCommand from "../../Infraestructure/Commands/LogOutCommand";
 import { injectable } from "inversify";
 
 @injectable()
-class LogOutHandler{
-    public constructor(){
+class LogOutHandler {
+    public constructor() {
 
     }
 
-    public async execute(command: LogOutCommand){
+    public async execute(command: LogOutCommand) {
         try {
-            const user: User | undefined = await User.findOne({ username: command.GetUsername() });
+            const a: DeleteResult = await Session.delete({ Token: command.GetToken() });
 
-            if (!user) {
-                throw new InfraestructureError({ message: 'not user found' }, 404);
+            if (a.affected === 1) {
+                console.log('ok');
+                return { message: 'successful logout!' };
             }
             else {
-                const a: DeleteResult = await Session.delete({ IdUser: user.id });
-
-                if (a.affected === 1) {
-                    return { message: 'successful logout!' };
-                }
-                else {
-                    throw new ApplicationError('error', 'problems with user logout' );
-                }
+                throw new ApplicationError('error', 'problems with user logout');
             }
         } catch (error) {
             throw new InfraestructureError(error, 500);

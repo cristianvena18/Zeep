@@ -15,22 +15,28 @@ export class PostShowAdapter {
         currentUserService: CurrentUserService) {
         this.currentUserService = currentUserService;
     }
-    public async adapt(req: Request): Promise<ShowPostCommand> {
+    public adapt = async (req: Request): Promise<ShowPostCommand> => {
         const { authorization } = req.headers;
-        const { iduser, idpost } = req.body;
-        const resultAuthorization = schemaAuthorization.validate(authorization);
-        const resultIdUser = schemaId.validate({ id: iduser });
-        const resultIdPost = schemaId.validate({ id: idpost });
-        if (resultAuthorization.error) {
-            throw new InfraestructureError(resultAuthorization.error.message, 400);
+        
+        let validAuth: number = -1;
+        if(authorization != undefined){
+            const resultAuthorization = schemaAuthorization.validate({ authorization });
+
+            if (resultAuthorization.error) {
+                throw new InfraestructureError(resultAuthorization.error.message, 400);
+            }
+
+            validAuth = await this.currentUserService.getUserId(authorization);
         }
-        if (resultIdUser.error) {
-            throw new InfraestructureError(resultIdUser.error.message, 400);
-        }
+
+        const { id } = req.params;
+
+        const resultIdPost = schemaId.validate({ id });
+
         if (resultIdPost.error) {
             throw new InfraestructureError(resultIdPost.error.message, 400);
         }
-        const validAuth: number = await this.currentUserService.getUserId(resultAuthorization.value);
+
         return new ShowPostCommand(validAuth, resultIdPost.value);
     }
 }

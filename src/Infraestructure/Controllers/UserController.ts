@@ -6,6 +6,8 @@ import UserStoreHandler from '../../Domain/Handlers/UserStoreHandler';
 import UserShowAdapter from '../Adapters/UserShowAdapter';
 import UserShowHandler from '../../Domain/Handlers/UserShowHandler';
 import { injectable, inject } from 'inversify';
+import { InfraestructureError } from '../utils/errors/InfraestructureError';
+import { ApplicationError } from '../utils/errors/AppError';
 
 @injectable()
 class UserController {
@@ -19,15 +21,15 @@ class UserController {
         @inject(UserStoreAdapter) storeAdapter: UserStoreAdapter,
         @inject(UserStoreHandler) storeHandler: UserStoreHandler,
         @inject(UserShowAdapter) showAdapter: UserShowAdapter,
-        @inject(UserShowHandler) showHandler: UserShowHandler 
-    ){
+        @inject(UserShowHandler) showHandler: UserShowHandler
+    ) {
         this.userShowAdapter = showAdapter;
         this.userShowHandler = showHandler;
         this.userStoreAdapter = storeAdapter;
         this.userStoreHandler = storeHandler;
     }
 
-    public async Store(req: Request, res: Response) {
+    public Store = async (req: Request, res: Response) => {
 
         const command = this.userStoreAdapter.adapt(req);
         const response = await this.userStoreHandler.execute(command);
@@ -35,15 +37,25 @@ class UserController {
         res.status(201).json({ message: response });
     }
 
-    public async Show(req: Request, res: Response) {
+    public Show = async (req: Request, res: Response) => {
 
-        const command = await this.userShowAdapter.adap(req);
-        const response = await this.userShowHandler.execute(command);
+        try {
+            const command = await this.userShowAdapter.adap(req);
+            const response = await this.userShowHandler.execute(command);
 
-        res.status(200).json({ message: 'user found', user: response });
+            res.status(200).json({ message: 'user found', user: response });
+        } catch (error) {
+            if (error instanceof InfraestructureError) {
+                res.status(error.getStatusCode()).json({ message: error.message });
+            } else if (error instanceof ApplicationError) {
+                res.status(500).json({ message: error.getDescription() });
+            } else {
+                res.status(500).json({ message: 'unexpected error' });
+            }
+        }
     }
 
-    public async BlockUser(req: Request, res: Response) {
+    public BlockUser = async (req: Request, res: Response) => {
         const { iduser, authorization } = req.body;
 
         if (!iduser) {
@@ -64,7 +76,7 @@ class UserController {
         }
     }
 
-    public async Update(req: Request, res: Response) {
+    public Update = async (req: Request, res: Response) => {
 
         const { id } = req.params;
         const roleName = req.body.role;

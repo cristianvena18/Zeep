@@ -2,7 +2,7 @@ import User from "../Entity/User";
 import { inject, injectable } from "inversify";
 import TYPES from "../../types";
 import IHashService from "../../Infraestructure/Services/IHashService";
-import Session from "../Entity/Sessions";
+import Session from "../Entity/Session";
 import { InfraestructureError } from "../../Infraestructure/utils/errors/InfraestructureError";
 import LoginCommand from "../../Infraestructure/Commands/LoginCommand";
 

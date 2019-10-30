@@ -18,19 +18,21 @@ class LoginAdapter{
     public async adapt(req: Request){
         const { username, password } = req.body;
 
-        if (!username || !password) {
+        if (username === undefined || password === undefined) {
             throw new InfraestructureError("not username and/or password found", 400);
         }
 
-        const schema = userSchema.validate(username, password);
+        const schema = userSchema.validate(req.body);
 
+        console.log('paso antes');
         if(schema.error){
-            throw new InfraestructureError(schema.error.message, 400);
+            throw new InfraestructureError('Bad request', 400);
         }
 
-        const hashPassword = this.hashService.Encrypt(schema.value.password);
+        console.log('paso');
+        const hashPassword = this.hashService.Encrypt(password);
 
-        return new LoginCommand(schema.value.username, hashPassword);
+        return new LoginCommand(username, hashPassword);
     }
 }
 

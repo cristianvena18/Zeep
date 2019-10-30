@@ -12,7 +12,7 @@ class Role extends BaseEntity{
 
     @ManyToMany(type => User)
     @JoinTable()
-    public categories?: User[];
+    public categories: User[];
 
     public constructor(name: string){
         super();

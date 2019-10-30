@@ -3,7 +3,7 @@ import User from '../../Domain/Entity/User';
 import Role from '../../Domain/Entity/Role';
 import Post from '../../Domain/Entity/Post';
 import Comment from '../../Domain/Entity/Comment';
-import Sessions from '../../Domain/Entity/Sessions';
+import Sessions from '../../Domain/Entity/Session';
 
 export async function createConnectionDB(){
     await createConnection({

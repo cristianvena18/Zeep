@@ -1,5 +1,5 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import User from "./User";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, OneToMany, JoinTable } from "typeorm";
+import Comment from "./Comment";
 
 @Entity()
 class Post extends BaseEntity {
@@ -13,8 +13,12 @@ class Post extends BaseEntity {
     @Column()
     public body: string;
 
-    @OneToMany(type => User, user => user.posts)
-    public user: User;
+    @Column()
+    public user: number;
+
+    @OneToMany(type => Comment, comment => comment.post)
+    @JoinTable()
+    public comment: Comment[];
 
     public GetObjectWithOutComments(): Object {
         const post = {

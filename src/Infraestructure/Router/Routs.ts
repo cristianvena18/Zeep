@@ -1,4 +1,4 @@
-import {Request, Response, Express, NextFunction} from 'express';
+import { Request, Response, Express, NextFunction } from 'express';
 
 import UserController from '../Controllers/UserController';
 import LoginController from '../Controllers/LoginController';
@@ -11,9 +11,9 @@ import { ErrorHandler } from '../utils/ErrorHandler';
 import container from '../../inversify.config';
 import RequireJsonContent from '../Middlewares/CurrentRequestMiddleware';
 
-class Routs{
+class Routs {
 
-    private express :Express;
+    private express: Express;
     private loginController: LoginController;
     private authMiddleware: AuthenticateMiddleware;
     private requestMiddleware: RequireJsonContent;
@@ -22,7 +22,7 @@ class Routs{
 
 
     constructor(
-        express:Express,
+        express: Express,
         @inject(LoginController) authController: LoginController,
         @inject(AuthenticateMiddleware) authMiddleware: AuthenticateMiddleware,
         @inject(RequireJsonContent) requestService: RequireJsonContent,
@@ -37,17 +37,17 @@ class Routs{
         this.userController = userController;
     }
 
-    public Up(){
+    public Up() {
         this.UserRouts();
     }
 
-    private UserRouts(){
+    private UserRouts() {
         this.express.use(this.requestMiddleware.Comprobate);
-        
-        this.express.use(bodyParser.urlencoded({extended: false}));
+
+        this.express.use(bodyParser.urlencoded({ extended: false }));
         this.express.use(bodyParser.json());
 
-        this.express.use((err:Error, req: Request, res: Response, next: NextFunction) => {
+        this.express.use((err: Error, req: Request, res: Response, next: NextFunction) => {
             const errorHandler: ErrorHandler = container.get(ErrorHandler);
 
             errorHandler.handle(err, res);
@@ -61,11 +61,13 @@ class Routs{
 
         this.express.use(this.authMiddleware.redirectIfNotAuthenticate);
 
+        this.express.post('/post/:id', (req: Request, res: Response) => {
+            res.status(500).json({ message: 'not implemented function' });
+        });
         this.express.get('/user/:id', this.userController.Show);
         this.express.post('/user/:id', this.userController.Update);
         this.express.post('/post', this.postController.Store);
         this.express.post('/logout', this.loginController.LogOut);
-        
     }
 }
 

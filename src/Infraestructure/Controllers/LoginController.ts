@@ -18,22 +18,26 @@ class LoginController {
         @inject(LoginHandler) loginHandler: LoginHandler,
         @inject(LogOutAdapter) logoutAdapter: LogOutAdapter,
         @inject(LogOutHandler) logoutHandler: LogOutHandler
-        ){
-            this.loginAdapter = loginAdapter;
-            this.loginHandler = loginHandler;
-            this.logoutAdapter = logoutAdapter;
-            this.logoutHandler = logoutHandler;
-        }
-
-    public async LogIn(req: Request, res: Response) {
-        const command = await this.loginAdapter.adapt(req);
-
-        const response = await this.loginHandler.execute(command);
-
-        res.status(200).json(response);
+    ) {
+        this.loginAdapter = loginAdapter;
+        this.loginHandler = loginHandler;
+        this.logoutAdapter = logoutAdapter;
+        this.logoutHandler = logoutHandler;
     }
 
-    public async LogOut(req: Request, res: Response) {
+    public LogIn = async (req: Request, res: Response) => {
+        try {
+            const command = await this.loginAdapter.adapt(req);
+
+            const response = await this.loginHandler.execute(command);
+
+            res.status(200).json(response);
+        } catch (error) {
+            res.status(500).json({message: error});
+        }
+    }
+
+    public LogOut = async (req: Request, res: Response) => {
 
         const command = this.logoutAdapter.adapt(req);
 

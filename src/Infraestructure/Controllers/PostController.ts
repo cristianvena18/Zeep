@@ -12,6 +12,9 @@ import { SessionNotFound } from '../Exception/SessionNotFound';
 import { DataBaseError } from '../Exception/DataBaseError';
 import { InvalidData } from '../Exception/InvalidData';
 import { injectable, inject } from 'inversify';
+import CreatePostCommand from '../Commands/CreatePostCommand';
+import { InfraestructureError } from '../utils/errors/InfraestructureError';
+import { ApplicationError } from '../utils/errors/AppError';
 
 @injectable()
 class PostController {
@@ -30,7 +33,7 @@ class PostController {
         @inject(PostShowHandler) postShowHandler: PostShowHandler,
         @inject(PostStoreAdapter) postStoreAdapter: PostStoreAdapter,
         @inject(PostStoreHandler) postStoreHandler: PostStoreHandler
-    ){
+    ) {
         this.postsShowAdapter = postsShowAdapter;
         this.postsShowHandler = postsShowHandler;
         this.postShowAdapter = postShowAdapter;
@@ -39,27 +42,49 @@ class PostController {
         this.postStoreHandler = postStoreHandler;
     }
 
-    public async Show(req: Request, res: Response) {
-
-        const commandAdapter = await this.postsShowAdapter.adapt(req);
-
-        const posts = await this.postsShowHandler.execute(commandAdapter);
-
-        res.status(200).json({ message: 'ok', posts });
-    }
-
-    public async ShowId(req: Request, res: Response) {
-
-        const commandAdapter = await this.postShowAdapter.adapt(req);
-        const post = await this.postShowHandler.execute(commandAdapter);
-
-        res.status(200).json({ message: 'ok', posts: [post] });
-    }
-
-    public async Store(req: Request, res: Response) {
+    public Show = async (req: Request, res: Response) => {
 
         try {
-            const commandAdapter = await this.postStoreAdapter.adapt(req);
+            const commandAdapter = await this.postsShowAdapter.adapt(req);
+
+            const posts = await this.postsShowHandler.execute(commandAdapter);
+
+            res.status(200).json({ message: 'ok', posts });
+        } catch (error) {
+            if(error instanceof InfraestructureError){
+                res.status(error.getStatusCode()).json(error.message);
+            }
+            else if(error instanceof ApplicationError){
+                res.status(500).json({message: error.getDescription()});
+            }else{
+                res.status(500).json({message: 'error unexpected'});
+            }
+        }
+        
+    }
+
+    public ShowId = async (req: Request, res: Response) => {
+        try {
+            const commandAdapter = await this.postShowAdapter.adapt(req);
+            const post = await this.postShowHandler.execute(commandAdapter);
+
+            res.status(200).json({ message: 'ok', posts: [post] });
+        } catch (error) {
+            if(error instanceof InfraestructureError){
+                res.status(error.getStatusCode()).json(error.message);
+            }
+            else if(error instanceof ApplicationError){
+                res.status(500).json({message: error.getDescription()});
+            }else{
+                res.status(500).json({message: 'error unexpected'});
+            }
+        }
+    }
+
+    public Store = async (req: Request, res: Response) => {
+
+        try {
+            const commandAdapter: CreatePostCommand = await this.postStoreAdapter.adapt(req);
             await this.postStoreHandler.execute(commandAdapter);
 
             res.status(200).json({ message: 'post saved' });
@@ -76,8 +101,8 @@ class PostController {
                 res.status(400).json({ message: error.message })
             } else if (error instanceof DataBaseError) {
                 res.status(500).json({ message: error.message });
-            } else{
-                res.status(500).json({message: error.message});
+            } else {
+                res.status(500).json({ message: error.message });
             }
         }
     }

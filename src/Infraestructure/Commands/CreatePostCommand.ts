@@ -1,5 +1,3 @@
-import User from "../../Domain/Entity/User";
-
 class CreatePostCommand{
     
     private user: number;

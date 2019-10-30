@@ -1,5 +1,4 @@
 import { BaseEntity, Entity, Column, PrimaryColumn } from "typeorm";
-import User from "./User";
 
 @Entity()
 class Session extends BaseEntity{

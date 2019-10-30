@@ -15,26 +15,20 @@ class PostsShowAdapter {
         this.currentUserService = currentUserService;
     }
 
-    public async adapt(req: Request) {
+    public adapt = async (req: Request) => {
         const { authorization } = req.headers;
-        const { id } = req.body;
 
-        if (authorization === '') {
-            throw new InfraestructureError('invalid authorization token', 403);
+        if (authorization == undefined) {
+            return new ShowPostCommand(-1);
         }
 
-        const resultAuthorization = schemaAuthorization.validate(authorization);
-        const resultId = schemaId.validate(id);
+        const resultAuthorization = schemaAuthorization.validate({authorization});
 
         if (resultAuthorization.error) {
-            throw new InfraestructureError(resultAuthorization.error.message, 400);
+            throw new InfraestructureError('error of authorization', 400);
         }
 
-        if (resultId.error) {
-            throw new InfraestructureError(resultId.error.message, 400);
-        }
-
-        const user = await this.currentUserService.getUserId(resultAuthorization.value);
+        const user = await this.currentUserService.getUserId(authorization);
 
         return new ShowPostCommand(user);
     }

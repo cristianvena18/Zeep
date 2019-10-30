@@ -1,12 +1,12 @@
 class LogOutCommand{
-    private username: string;
+    private token: string;
 
-    public constructor(username: string){
-        this.username = username;
+    public constructor(token: string){
+        this.token = token;
     }
 
-    public GetUsername(): string{
-        return this.username;
+    public GetToken(): string{
+        return this.token;
     }
 }
 

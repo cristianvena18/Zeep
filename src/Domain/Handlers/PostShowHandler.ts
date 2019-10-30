@@ -4,20 +4,30 @@ import User from "../Entity/User";
 import { Roles } from "../Enums/Roles";
 import { ApplicationError } from "../../Infraestructure/utils/errors/AppError";
 import { injectable } from "inversify";
+import Comment from "../Entity/Comment";
 
 @injectable()
 class PostShowHandler {
 
-    public async execute(command: ShowPostCommand): Promise<Post> {
+    public execute = async (command: ShowPostCommand): Promise<Post> => {
         try {
 
-            const user = await User.findOneOrFail({where: {id: command.GetIdUser()}, relations: ['role']});
-            var post: Post | undefined;
+            const userId = command.GetIdUser();
+            let post: Post | undefined;
 
-            if(user.hasRole(Roles.ZEEPER)){
-                post = await Post.findOne({ where: { Id: command.GetIdPost() }, relations: ['comment'] });
-            }else{
-                post = await Post.findOne({ where: { Id: command.GetIdPost() } })
+            console.log(userId);
+            if (userId === -1) {
+                post = await Post.findOne({ where: { Id: command.GetIdPost() } });
+                return post;
+            }
+
+            const user = await User.findOneOrFail({ where: { id: userId }, relations: ['roles'] });
+
+            if (user.hasRole(Roles.ZEEPER)) {
+                //where: { Id: command.GetIdPost() }
+                post = await Post.findOne(command.GetIdPost(),{ relations: ['comment'] });
+            } else {
+                post = await Post.findOne({ where: { Id: command.GetIdPost() } });
             }
 
             if (post) {

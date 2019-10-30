@@ -16,7 +16,8 @@ class PostStoreHandler {
 
             const user: User = await User.findOneOrFail({where: {id: command.GetUser()}});
 
-            post.user = user;
+            post.user = user.id;
+            post.comment = [];
             post.save();
         } catch (error) {
             if(error instanceof EntityNotFound){
